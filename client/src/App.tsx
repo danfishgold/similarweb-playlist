@@ -1,10 +1,10 @@
 import React from 'react'
-import { addSongs, markAsPlayed } from 'shared/src/messages'
 import { Song } from 'shared/src/playlist'
 import { v4 as uuid } from 'uuid'
 import Player from './components/Player'
 import Playlist from './components/Playlist'
 import SongInput from './components/SongInput'
+import { addSongs, markAsPlayed } from './reducer'
 import { usePlaylist, usePlaylistDispatch } from './usePlaylist'
 
 function App() {

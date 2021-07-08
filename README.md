@@ -28,6 +28,11 @@ as a "dumb pipe".
 - The playlist is emptied when the last user leaves. This makes sense from a
   design perspective but was annoying from a development perspective
 - addSongs instead of addSong to support batch addition
+- I had to duplicate reducer.ts in front/back end because of mismatched "module"
+  values in the tsconfig. I wasted a lot of time on this. Important to note:
+  that code is sharable mainly because the back end implementation is naive. A
+  more advanced back end would need separate logic, so maybe this duplication
+  isn't the worst thing.
 
 ## TODO
 
@@ -38,3 +43,4 @@ as a "dumb pipe".
 - use nicer state management
 - handle errors (weird playlist updating in the backend, socket connection
   status, etc)
+- figure out a nicer way to not duplicate reducer.ts in front/back end

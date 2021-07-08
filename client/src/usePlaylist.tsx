@@ -1,11 +1,7 @@
 import React from 'react'
-import {
-  MutationMessage,
-  mutations,
-  playlistReducer,
-} from 'shared/src/messages'
 import { Playlist } from 'shared/src/playlist'
 import { io } from 'socket.io-client'
+import playlistReducer, { MutationMessage, setPlaylist } from './reducer'
 import { wrapIO } from './typesafeSocket'
 
 const PlaylistContext = React.createContext<Playlist | null>(null)
@@ -29,7 +25,7 @@ export function PlaylistProvider({
   React.useEffect(() => {
     socket.current = wrapIO(io(url))
     socket.current.on('playlist', ({ playlist }) => {
-      dispatch(mutations.setPlaylist(playlist))
+      dispatch(setPlaylist(playlist))
     })
   }, [url])
 
