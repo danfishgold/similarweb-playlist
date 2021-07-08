@@ -27,14 +27,14 @@ as a "dumb pipe".
   mutations coming in at the same time from multiple users.
 - The playlist is emptied when the last user leaves. This makes sense from a
   design perspective but was annoying from a development perspective
+- addSongs instead of addSong to support batch addition
 
 ## TODO
 
-- add front end logic
-- css
-- connect front end to back end
-- use youtube embed api
+- css and design
 - handle ports more gracefully
 - use youtube api
-- add option for premade CRJ playlist
 - input validation
+- use nicer state management
+- handle errors (weird playlist updating in the backend, socket connection
+  status, etc)
