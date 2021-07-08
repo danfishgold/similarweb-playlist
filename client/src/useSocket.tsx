@@ -15,11 +15,11 @@ export default function useSocket(
   }, [url, onPlaylistMessage])
 
   return {
-    addSong(song: Song) {
-      socket.current.emit('mutation', { type: 'addSong', song })
+    addSongs(songs: Song[]) {
+      socket.current.emit('mutation', { type: 'addSongs', songs })
     },
-    advanceToSong(songId: string) {
-      socket.current.emit('mutation', { type: 'advanceToSong', songId })
+    markAsPlayed(songIds: string[]) {
+      socket.current.emit('mutation', { type: 'markAsPlayed', songIds })
     },
   }
 }

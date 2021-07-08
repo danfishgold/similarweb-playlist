@@ -1,6 +1,7 @@
 import React from 'react'
 import { PlaylistMessage } from 'shared/src/messages'
 import { Playlist as PlaylistType, Song } from 'shared/src/playlist'
+import { v4 as uuid } from 'uuid'
 import Player from './components/Player'
 import Playlist from './components/Playlist'
 import SongInput from './components/SongInput'
@@ -24,18 +25,53 @@ function App() {
   )
 
   const onAddSong = (song: Song) => {
-    setPlaylist((playlist) => ({
+    setPlaylist({
       ...playlist,
       currentAndNextSongs: [...playlist.currentAndNextSongs, song],
-    }))
-    socket.addSong(song)
+    })
+    socket.addSongs([song])
+  }
+
+  const onCurrentSongEnd = () => {
+    console.log('end')
+    setPlaylist({
+      ...playlist,
+      previousSongs: [
+        ...playlist.previousSongs,
+        playlist.currentAndNextSongs[0],
+      ],
+      currentAndNextSongs: playlist.currentAndNextSongs.slice(1),
+    })
+    socket.markAsPlayed([playlist.currentAndNextSongs[0].id])
+  }
+
+  const addCRJ = () => {
+    socket.addSongs([
+      {
+        id: uuid(),
+        title: 'boop',
+        durationInSeconds: 1,
+        url: 'FLkj9zr0-sQ',
+        thumbnailUrl: '',
+      },
+      {
+        id: uuid(),
+        title: 'boop',
+        durationInSeconds: 1,
+        url: '_2hdlmg_4GE',
+        thumbnailUrl: '',
+      },
+    ])
   }
 
   return (
     <main>
       <SongInput onAddSong={onAddSong} />
-      <Playlist playlist={playlist} />
-      <Player firstPlaylistSong={playlist.currentAndNextSongs[0] ?? null} />
+      <Playlist playlist={playlist} addCRJ={addCRJ} />
+      <Player
+        firstPlaylistSong={playlist.currentAndNextSongs[0] ?? null}
+        onEnd={onCurrentSongEnd}
+      />
     </main>
   )
 }

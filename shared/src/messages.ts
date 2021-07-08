@@ -1,20 +1,21 @@
 import { Playlist, Song } from './playlist'
+import { partition } from './util'
 
 export type Message = {
   mutation: MutationMessage
   playlist: PlaylistMessage
 }
 
-export type MutationMessage = AddSong | RemoveSong | MoveSong | AdvanceToSong
+export type MutationMessage = AddSongs | RemoveSong | MoveSong | AdvanceToSong
 
 export type PlaylistMessage = {
   playlist: Playlist
   mutation?: MutationMessage
 }
 
-export type AddSong = {
-  type: 'addSong'
-  song: Song
+export type AddSongs = {
+  type: 'addSongs'
+  songs: Song[]
 }
 
 export type RemoveSong = {
@@ -29,8 +30,8 @@ export type MoveSong = {
 }
 
 export type AdvanceToSong = {
-  type: 'advanceToSong'
-  songId: string
+  type: 'markAsPlayed'
+  songIds: string[]
 }
 
 export function updatePlaylist(
@@ -38,10 +39,13 @@ export function updatePlaylist(
   message: MutationMessage,
 ): Playlist {
   switch (message.type) {
-    case 'addSong': {
+    case 'addSongs': {
       return {
         ...playlist,
-        currentAndNextSongs: [...playlist.currentAndNextSongs, message.song],
+        currentAndNextSongs: [
+          ...playlist.currentAndNextSongs,
+          ...message.songs,
+        ],
       }
     }
     case 'moveSong': {
@@ -96,21 +100,15 @@ export function updatePlaylist(
         ),
       }
     }
-    case 'advanceToSong': {
-      const songIndex = playlist.currentAndNextSongs.findIndex(
-        (song) => song.id === message.songId,
+    case 'markAsPlayed': {
+      const [songsToRemove, filteredNext] = partition(
+        playlist.currentAndNextSongs,
+        (song) => message.songIds.includes(song.id),
       )
-      if (songIndex == -1) {
-        throw new Error(
-          `Tried to advance to song id ${message.songId}, which isn't in the playlist`,
-        )
-      }
+
       return {
-        previousSongs: [
-          ...playlist.previousSongs,
-          ...playlist.currentAndNextSongs.slice(0, songIndex),
-        ],
-        currentAndNextSongs: playlist.currentAndNextSongs.slice(songIndex),
+        previousSongs: [...playlist.previousSongs, ...songsToRemove],
+        currentAndNextSongs: filteredNext,
       }
     }
   }
