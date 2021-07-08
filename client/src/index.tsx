@@ -9,7 +9,7 @@ const socketUrl =
 
 ReactDOM.render(
   <React.StrictMode>
-    <PlaylistProvider url={socketUrl}>
+    <PlaylistProvider url={socketUrl} debounceTime={400}>
       <App />
     </PlaylistProvider>
   </React.StrictMode>,

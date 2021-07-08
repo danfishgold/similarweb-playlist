@@ -14,25 +14,31 @@ PlaylistDispatchContext.displayName = 'PlaylistDispatchContext'
 
 export function PlaylistProvider({
   url,
+  debounceTime,
   children,
-}: React.PropsWithChildren<{ url: string }>) {
+}: React.PropsWithChildren<{ url: string; debounceTime: number }>) {
   const [playlist, dispatch] = React.useReducer(playlistReducer, {
     previousSongs: [],
     currentAndNextSongs: [],
   })
 
   const socket = React.useRef(wrapIO(io()))
+  const debounceTimeout = React.useRef<NodeJS.Timeout | null>(null)
   React.useEffect(() => {
     socket.current = wrapIO(io(url))
     socket.current.on('playlist', ({ playlist }) => {
-      dispatch(setPlaylist(playlist))
+      debounceTimeout.current = setTimeout(
+        () => dispatch(setPlaylist(playlist)),
+        debounceTime,
+      )
     })
-  }, [url])
+  }, [url, debounceTime])
 
   const dispatchLocallyAndToSocket = React.useCallback(
     (action: MutationMessage) => {
       dispatch(action)
       socket.current.emit('mutation', action)
+      debounceTimeout.current && clearTimeout(debounceTimeout.current)
     },
     [],
   )
