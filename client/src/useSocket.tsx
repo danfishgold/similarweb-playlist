@@ -1,21 +1,24 @@
 import React from 'react'
+import { PlaylistMessage } from 'shared/src/messages'
+import { Song } from 'shared/src/playlist'
 import io, { Socket } from 'socket.io-client'
 
 const SocketContext = React.createContext<null | Socket>(null)
 SocketContext.displayName = 'SocketContext'
 
-export default function useSocket(url: string) {
-  const socket = React.useContext(SocketContext)
-  if (!socket) {
-    throw new Error(`useSocket can only be used inside a <SocketProvider>`)
+export default function useSocket(
+  url: string,
+  onPlaylistMessage: (playlistMessage: PlaylistMessage) => void,
+) {
+  const socket = React.useRef(io())
+  React.useEffect(() => {
+    socket.current = io(url)
+    socket.current.on('playlist', onPlaylistMessage)
+  }, [url, onPlaylistMessage])
+
+  return {
+    addSong(song: Song) {
+      socket.current.emit('mutation', { type: 'addSong', song })
+    },
   }
-
-  return socket
-}
-
-type ProviderProps = React.PropsWithChildren<{ url: string }>
-
-export function SocketProvider({ url, ...props }: ProviderProps) {
-  const socket = React.useRef(io(url))
-  return <SocketContext.Provider value={socket.current} {...props} />
 }

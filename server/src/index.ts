@@ -2,7 +2,7 @@ import cors from 'cors'
 import express from 'express'
 import http from 'http'
 import path from 'path'
-import { Message } from 'shared/src/messages'
+import { MutationMessage, updatePlaylist } from 'shared/src/messages'
 import { Playlist } from 'shared/src/playlist'
 import { Server } from 'socket.io'
 
@@ -30,15 +30,12 @@ app.get('/playlist', (req, res) => {
 })
 
 io.on('connection', (socket) => {
-  socket.send(playlist)
+  socket.emit('playlist', { playlist })
 
-  socket.on('message', (message: Message) => {
-    switch (message.type) {
-      case 'addSong': {
-        playlist.currentAndNextSongs.push(message.song)
-        socket.broadcast.emit('message', playlist)
-      }
-    }
+  socket.on('mutation', (mutation: MutationMessage) => {
+    console.log(mutation)
+    playlist = updatePlaylist(playlist, mutation)
+    io.emit('playlist', { playlist, mutation })
   })
 })
 

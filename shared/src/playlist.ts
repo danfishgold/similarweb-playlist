@@ -8,5 +8,5 @@ export type Song = {
   title: string
   thumbnailUrl: string
   durationInSeconds: number
-  addedByUserId: number
+  id: string
 }
