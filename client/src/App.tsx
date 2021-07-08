@@ -33,7 +33,6 @@ function App() {
   }
 
   const onCurrentSongEnd = () => {
-    console.log('end')
     setPlaylist({
       ...playlist,
       previousSongs: [

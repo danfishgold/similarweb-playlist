@@ -46,7 +46,6 @@ io.on('connection', (socket) => {
   socket.emit('playlist', { playlist })
 
   socket.on('mutation', (mutation: MutationMessage) => {
-    console.log(mutation)
     playlist = updatePlaylist(playlist, mutation)
     io.emit('playlist', { playlist, mutation })
   })

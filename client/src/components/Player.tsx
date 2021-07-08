@@ -1,4 +1,5 @@
 import React from 'react'
+import YouTube, { YouTubeProps } from 'react-youtube'
 import { Song } from 'shared/src/playlist'
 
 type Props = {
@@ -20,5 +21,18 @@ export default function Player({ firstPlaylistSong, onEnd }: Props) {
     }
   }, [currentlyPlaying, firstPlaylistSong])
 
-  return <div>player</div>
+  const onReady: YouTubeProps['onReady'] = (event) => {
+    player.current = event.target
+  }
+
+  return (
+    <div>
+      <YouTube
+        videoId={currentlyPlaying?.url}
+        onReady={onReady}
+        onEnd={onEnd}
+        opts={{ playerVars: { autoplay: 1 } }}
+      />
+    </div>
+  )
 }
