@@ -40,7 +40,7 @@ app.get('/playlist', (req, res) => {
   res.json(playlist)
 })
 
-io.onConnection((socket) => {
+io.on('connection', (socket) => {
   socket.emit('playlist', { playlist })
 
   socket.on('mutation', (mutation: MutationMessage) => {
