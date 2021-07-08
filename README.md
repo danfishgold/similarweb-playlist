@@ -37,10 +37,9 @@ as a "dumb pipe".
 ## TODO
 
 - css and design
+- tests
 - handle ports more gracefully
 - use youtube api
-- input validation
-- use nicer state management
 - handle errors (weird playlist updating in the backend, socket connection
   status, etc)
 - figure out a nicer way to not duplicate reducer.ts in front/back end
