@@ -25,6 +25,8 @@ as a "dumb pipe".
 - The playlist mutation operations refer to song ids rather than the indices of
   the songs in the playlist. this is more robust when there are multiple
   mutations coming in at the same time from multiple users.
+- The playlist is emptied when the last user leaves. This makes sense from a
+  design perspective but was annoying from a development perspective
 
 ## TODO
 

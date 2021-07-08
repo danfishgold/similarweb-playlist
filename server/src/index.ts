@@ -35,18 +35,30 @@ let playlist: Playlist = {
   previousSongs: [],
   currentAndNextSongs: [],
 }
+let connectionCount = 0
 
 app.get('/playlist', (req, res) => {
   res.json(playlist)
 })
 
 io.on('connection', (socket) => {
+  connectionCount += 1
   socket.emit('playlist', { playlist })
 
   socket.on('mutation', (mutation: MutationMessage) => {
     console.log(mutation)
     playlist = updatePlaylist(playlist, mutation)
     io.emit('playlist', { playlist, mutation })
+  })
+
+  socket.on('disconnect', () => {
+    connectionCount -= 1
+    if (connectionCount == 0) {
+      playlist = { previousSongs: [], currentAndNextSongs: [] }
+    } else if (connectionCount < 0) {
+      console.warn(`Connection count was ${connectionCount}. Reset to 0`)
+      connectionCount = 0
+    }
   })
 })
 
