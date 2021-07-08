@@ -5,20 +5,31 @@ import path from 'path'
 import { MutationMessage, updatePlaylist } from 'shared/src/messages'
 import { Playlist } from 'shared/src/playlist'
 import { Server } from 'socket.io'
+import { wrapIO } from './typesafeSocket'
 
 const app = express()
 app.use(express.static(path.join(__dirname, '..', '..', 'client', 'build')))
 
-if (process.env.NODE_ENV !== 'production') {
-  app.use(cors({ origin: 'http://localhost:3000' }))
-}
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? undefined
+        : 'http://localhost:3000',
+  }),
+)
 
 const server = http.createServer(app)
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:3000',
-  },
-})
+const io = wrapIO(
+  new Server(server, {
+    cors: {
+      origin:
+        process.env.NODE_ENV === 'production'
+          ? undefined
+          : 'http://localhost:3000',
+    },
+  }),
+)
 
 let playlist: Playlist = {
   previousSongs: [],
@@ -29,7 +40,7 @@ app.get('/playlist', (req, res) => {
   res.json(playlist)
 })
 
-io.on('connection', (socket) => {
+io.onConnection((socket) => {
   socket.emit('playlist', { playlist })
 
   socket.on('mutation', (mutation: MutationMessage) => {

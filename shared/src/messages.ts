@@ -1,10 +1,15 @@
 import { Playlist, Song } from './playlist'
 
+export type Message = {
+  mutation: MutationMessage
+  playlist: PlaylistMessage
+}
+
 export type MutationMessage = AddSong | RemoveSong | MoveSong | AdvanceToSong
 
 export type PlaylistMessage = {
   playlist: Playlist
-  mutation: MutationMessage
+  mutation?: MutationMessage
 }
 
 export type AddSong = {
