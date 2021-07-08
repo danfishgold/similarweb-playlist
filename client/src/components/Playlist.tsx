@@ -1,5 +1,7 @@
 import React from 'react'
 import { Playlist as PlaylistType, Song } from 'shared/src/playlist'
+import { markAsPlayed, moveSong, removeSong } from '../reducer'
+import { usePlaylist, usePlaylistDispatch } from '../usePlaylist'
 
 type Props = { playlist: PlaylistType; addCRJ: () => void }
 
@@ -13,7 +15,7 @@ export default function Playlist({ playlist, addCRJ }: Props) {
           <button onClick={addCRJ}>add some CRJ</button>
         </Placeholder>
       ) : (
-        <UpcomingSongs items={playlist.currentAndNextSongs} />
+        <UpcomingSongs songs={playlist.currentAndNextSongs} />
       )}
     </div>
   )
@@ -23,10 +25,10 @@ function Placeholder({ children }: React.PropsWithChildren<{}>) {
   return <div>{children}</div>
 }
 
-function UpcomingSongs({ items }: { items: Song[] }) {
+function UpcomingSongs({ songs }: { songs: Song[] }) {
   return (
     <ul>
-      {items.map((song, index) => (
+      {songs.map((song, index) => (
         <SongItem
           song={song}
           playlistPosition={playlistPositionForIndex(index)}
@@ -59,22 +61,61 @@ type SongProps = {
 }
 
 function SongItem({ song, playlistPosition }: SongProps) {
+  const playlist = usePlaylist()
+  const dispatch = usePlaylistDispatch()
+
+  const lastSongId = lastSongIdInPlaylist(playlist)
+  const skip = () => dispatch(markAsPlayed([song.id]))
+  const remove = () => dispatch(removeSong(song.id))
+  const playNow = () => dispatch(markAsPlayed(allSongsUntil(song.id, playlist)))
+  const playNext = () => {
+    dispatch(
+      moveSong({
+        songId: song.id,
+        toAfterId: playlist.currentAndNextSongs[0].id,
+      }),
+    )
+  }
+  const playLast = () =>
+    dispatch(
+      moveSong({
+        songId: song.id,
+        toAfterId: lastSongId,
+      }),
+    )
+
   return (
     <li>
       <strong>{song.title}</strong>
-      {playlistPosition === 'current' && (
-        <button onClick={() => {}}>skip</button>
+      {playlistPosition === 'current' && <button onClick={skip}>skip</button>}
+      {playlistPosition !== 'current' && (
+        <button onClick={remove}>remove</button>
       )}
       {playlistPosition !== 'current' && (
-        <button onClick={() => {}}>remove</button>
-      )}
-      {playlistPosition !== 'current' && (
-        <button onClick={() => {}}>play now</button>
+        <button onClick={playNow}>play now</button>
       )}
       {playlistPosition === 'future' && (
-        <button onClick={() => {}}>play next</button>
+        <button onClick={playNext}>play next</button>
+      )}
+      {playlistPosition !== 'current' && song.id !== lastSongId && (
+        <button onClick={playLast}>play last</button>
       )}
       {JSON.stringify(song)}
     </li>
   )
+}
+function allSongsUntil(id: string, playlist: PlaylistType): string[] {
+  const index = playlist.currentAndNextSongs.findIndex(
+    (aSong) => aSong.id === id,
+  )
+  if (index === -1) {
+    throw new Error('TODO')
+  }
+
+  return playlist.currentAndNextSongs.slice(0, index).map((song) => song.id)
+}
+
+function lastSongIdInPlaylist(playlist: PlaylistType): string {
+  return playlist.currentAndNextSongs[playlist.currentAndNextSongs.length - 1]
+    .id
 }

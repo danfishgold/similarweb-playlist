@@ -79,8 +79,8 @@ export default function playlistReducer(
           currentAndNextSongs: [
             ...playlist.currentAndNextSongs.slice(0, newIndex),
             playlist.currentAndNextSongs[oldIndex],
-            ...playlist.currentAndNextSongs.slice(newIndex + 1, oldIndex),
-            ...playlist.currentAndNextSongs.slice(oldIndex),
+            ...playlist.currentAndNextSongs.slice(newIndex, oldIndex),
+            ...playlist.currentAndNextSongs.slice(oldIndex + 1),
           ],
         }
       }

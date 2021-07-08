@@ -31,7 +31,7 @@ export default function Player({ firstPlaylistSong, onEnd }: Props) {
         videoId={currentlyPlaying?.url}
         onReady={onReady}
         onEnd={onEnd}
-        opts={{ playerVars: { autoplay: 1 } }}
+        opts={{ playerVars: { autoplay: 0 } }}
       />
     </div>
   )
