@@ -26,13 +26,55 @@ function Placeholder({ children }: React.PropsWithChildren<{}>) {
 function UpcomingSongs({ items }: { items: Song[] }) {
   return (
     <ul>
-      {items.map((song) => (
-        <SongItem song={song} key={song.id} />
+      {items.map((song, index) => (
+        <SongItem
+          song={song}
+          playlistPosition={playlistPositionForIndex(index)}
+          key={song.id}
+        />
       ))}
     </ul>
   )
 }
 
-function SongItem({ song }: { song: Song }) {
-  return <li>{JSON.stringify(song)}</li>
+type PlaylistPosition = 'current' | 'next' | 'future'
+
+function playlistPositionForIndex(index: number): PlaylistPosition {
+  switch (index) {
+    case 0: {
+      return 'current'
+    }
+    case 1: {
+      return 'next'
+    }
+    default: {
+      return 'future'
+    }
+  }
+}
+
+type SongProps = {
+  song: Song
+  playlistPosition: PlaylistPosition
+}
+
+function SongItem({ song, playlistPosition }: SongProps) {
+  return (
+    <li>
+      <strong>{song.title}</strong>
+      {playlistPosition === 'current' && (
+        <button onClick={() => {}}>skip</button>
+      )}
+      {playlistPosition !== 'current' && (
+        <button onClick={() => {}}>remove</button>
+      )}
+      {playlistPosition !== 'current' && (
+        <button onClick={() => {}}>play now</button>
+      )}
+      {playlistPosition === 'future' && (
+        <button onClick={() => {}}>play next</button>
+      )}
+      {JSON.stringify(song)}
+    </li>
+  )
 }
