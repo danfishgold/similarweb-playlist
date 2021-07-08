@@ -11,3 +11,7 @@ export function partition<T>(array: T[], fn: (item: T) => boolean): [T[], T[]] {
 
   return [trues, falses]
 }
+
+export function withPayloadType<T>() {
+  return (t: T) => ({ payload: t })
+}

@@ -2,7 +2,7 @@ import cors from 'cors'
 import express from 'express'
 import http from 'http'
 import path from 'path'
-import { MutationMessage, updatePlaylist } from 'shared/src/messages'
+import { MutationMessage, playlistReducer } from 'shared/src/messages'
 import { Playlist } from 'shared/src/playlist'
 import { Server } from 'socket.io'
 import { wrapIO } from './typesafeSocket'
@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
   socket.emit('playlist', { playlist })
 
   socket.on('mutation', (mutation: MutationMessage) => {
-    playlist = updatePlaylist(playlist, mutation)
+    playlist = playlistReducer(playlist, mutation)
     io.emit('playlist', { playlist, mutation })
   })
 
