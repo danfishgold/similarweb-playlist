@@ -12,7 +12,6 @@ as a "dumb pipe".
 
 # TODO
 
-- deploy
 - add front end logic
 - connect front end to back end
 - use youtube api
