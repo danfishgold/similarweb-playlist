@@ -1,0 +1,21 @@
+{
+  "private": true,
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ],
+  "scripts": {
+    "client:install": "cd client && yarn install",
+    "client:build": "cd client && yarn build",
+    "client:start": "cd client && yarn start",
+    "server:install": "cd server && yarn install",
+    "server:start": "cd server && yarn start",
+    "preinstall": "npm-run-all --parallel client:install server:install",
+    "dev": "npm-run-all --parallel client:start server:start",
+    "start": "npm-run-all --serial client:build server:start"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
