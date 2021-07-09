@@ -8,23 +8,13 @@ import playLastIcon from '../icons/PlayLast.svg'
 import playNextIcon from '../icons/PlayNext.svg'
 import { addSongs, markAsPlayed, moveSong, removeSong } from '../reducer'
 import { usePlaylist } from '../usePlaylist'
-import SongInput from './SongInput'
 
 export default function Playlist() {
-  const [playlist, dispatch] = usePlaylist()
-  const addCRJ = () => dispatch(addSongs(crj))
+  const [playlist] = usePlaylist()
   return (
     <div className='playlist'>
-      <h2>Playlist</h2>
-      <SongInput />
       {playlist.currentAndNextSongs.length === 0 ? (
-        <Placeholder>
-          Your playlist is empty. Search for songs to add them to the playlist
-          or{' '}
-          <button className='text-button' onClick={addCRJ}>
-            just add some CRJ
-          </button>
-        </Placeholder>
+        <Placeholder />
       ) : (
         <UpcomingSongs songs={playlist.currentAndNextSongs} />
       )}
@@ -32,8 +22,18 @@ export default function Playlist() {
   )
 }
 
-function Placeholder({ children }: React.PropsWithChildren<{}>) {
-  return <div>{children}</div>
+function Placeholder() {
+  const [, dispatch] = usePlaylist()
+  const addCRJ = () => dispatch(addSongs(crj))
+
+  return (
+    <div className='placeholder'>
+      Your playlist is empty. Search for songs to add them to the playlist or{' '}
+      <button className='text-button' onClick={addCRJ}>
+        just add some CRJ
+      </button>
+    </div>
+  )
 }
 
 function UpcomingSongs({ songs }: { songs: Song[] }) {

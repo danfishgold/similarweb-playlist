@@ -1,6 +1,7 @@
 import React from 'react'
 import Player from './components/Player'
 import Playlist from './components/Playlist'
+import SongInput from './components/SongInput'
 import { markAsPlayed } from './reducer'
 import { usePlaylist } from './usePlaylist'
 
@@ -18,7 +19,10 @@ function App() {
         firstPlaylistSong={playlist.currentAndNextSongs[0] ?? null}
         onEnd={onCurrentSongEnd}
       />
-      <Playlist />
+      <div className='sidebar'>
+        <SongInput />
+        <Playlist />
+      </div>
     </main>
   )
 }
