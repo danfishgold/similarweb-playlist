@@ -1,17 +1,20 @@
 import React from 'react'
 import { Playlist as PlaylistType, Song } from 'shared/src/playlist'
 import crj from '../crj'
+import removeIcon from '../icons/Delete.svg'
+import skipIcon from '../icons/PlaybackNext.svg'
+import playNowIcon from '../icons/PlaybackPlay.svg'
+import playLastIcon from '../icons/PlayLast.svg'
+import playNextIcon from '../icons/PlayNext.svg'
 import { addSongs, markAsPlayed, moveSong, removeSong } from '../reducer'
 import { usePlaylist } from '../usePlaylist'
 
-type Props = {}
-
-export default function Playlist({}: Props) {
+export default function Playlist() {
   const [playlist, dispatch] = usePlaylist()
   const addCRJ = () => dispatch(addSongs(crj))
   return (
-    <div>
-      <h2>Up next</h2>
+    <div className='playlist'>
+      <h2>Playlist</h2>
       {playlist.currentAndNextSongs.length === 0 ? (
         <Placeholder>
           No songs yet. Add YouTube links above or{' '}
@@ -87,22 +90,50 @@ function SongItem({ song, playlistPosition }: SongProps) {
     )
 
   return (
-    <li>
-      <strong>{song.title}</strong>
-      {playlistPosition === 'current' && <button onClick={skip}>skip</button>}
-      {playlistPosition !== 'current' && (
-        <button onClick={remove}>remove</button>
-      )}
-      {playlistPosition !== 'current' && (
-        <button onClick={playNow}>play now</button>
-      )}
-      {playlistPosition === 'future' && (
-        <button onClick={playNext}>play next</button>
-      )}
-      {playlistPosition !== 'current' && song.id !== lastSongId && (
-        <button onClick={playLast}>play last</button>
-      )}
-      {JSON.stringify(song)}
+    <li
+      className={`playlist-item ${
+        playlistPosition === 'current' ? 'playlist-item--current' : ''
+      }`}
+    >
+      <img
+        src={song.thumbnail.url}
+        width={song.thumbnail.width}
+        height={song.thumbnail.height}
+        alt=''
+      />
+      <div className='playlist-item__info'>
+        <strong className='playlist-item__info__title'>{song.title}</strong>
+        <span className='playlist-item__info__duration'>
+          {formatDuration(song.durationInSeconds)}
+        </span>
+        <div className='playlist-item__info__button-row'>
+          {playlistPosition === 'current' && (
+            <button onClick={skip} aria-label='skip'>
+              <img src={skipIcon} alt='' />
+            </button>
+          )}
+          {playlistPosition !== 'current' && (
+            <button onClick={remove} aria-label='remove'>
+              <img src={removeIcon} alt='' />
+            </button>
+          )}
+          {playlistPosition !== 'current' && (
+            <button onClick={playNow} aria-label='play now'>
+              <img src={playNowIcon} alt='' />
+            </button>
+          )}
+          {playlistPosition === 'future' && (
+            <button onClick={playNext} aria-label='play next'>
+              <img src={playNextIcon} alt='' />
+            </button>
+          )}
+          {playlistPosition !== 'current' && song.id !== lastSongId && (
+            <button onClick={playLast} aria-label='play last'>
+              <img src={playLastIcon} alt='' />
+            </button>
+          )}
+        </div>
+      </div>
     </li>
   )
 }
@@ -120,4 +151,12 @@ function allSongsUntil(id: string, playlist: PlaylistType): string[] {
 function lastSongIdInPlaylist(playlist: PlaylistType): string {
   return playlist.currentAndNextSongs[playlist.currentAndNextSongs.length - 1]
     .id
+}
+function formatDuration(duration: number): string {
+  const minutes = Math.floor(duration / 60)
+  const seconds = duration % 60
+
+  const secondsString = seconds < 10 ? `0${seconds}` : `${seconds}`
+
+  return `${minutes}:${secondsString}`
 }

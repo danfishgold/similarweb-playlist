@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="35px" height="27px" viewBox="0 0 35 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(1.000000, 0.000000)" fill="#000000">
+            <path d="M10.5,26 L31.5,26 C34,26 34,26 34,23.5 C34,21 34,21 31.5,21 L10.5,21 C8,21 8,21 8,23.5 C8,26 8,26 10.5,26 Z" id="Line" fill-rule="nonzero"></path>
+            <path d="M9.5,3 L32.5,3 C33.75,3 34,2.6216853 34,1.5 C34,0.378314697 33.75,7.10542736e-15 32.5,7.10542736e-15 L9.5,7.10542736e-15 C8.25046048,7.10542736e-15 8,0.24871891 8,1.5 C8,2.75128109 8.24560258,3 9.5,3 Z" id="Line-Copy-6" fill-rule="nonzero"></path>
+            <path d="M9.5,10 L32.5,10 C33.75,10 34,9.6216853 34,8.5 C34,7.3783147 33.75,7 32.5,7 L9.5,7 C8.25046048,7 8,7.24871891 8,8.5 C8,9.75128109 8.24560258,10 9.5,10 Z" id="Line-Copy-7" fill-rule="nonzero"></path>
+            <path d="M9.5,17 L32.5,17 C33.75,17 34,16.6216853 34,15.5 C34,14.3783147 33.75,14 32.5,14 L9.5,14 C8.25046048,14 8,14.2487189 8,15.5 C8,16.7512811 8.24560258,17 9.5,17 Z" id="Line-Copy-8" fill-rule="nonzero"></path>
+            <polygon id="Triangle" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" points="4 23.5 0 26 0 21"></polygon>
+        </g>
+    </g>
+</svg>

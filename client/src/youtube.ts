@@ -11,7 +11,7 @@ type VideoItem = {
   id: string
   snippet: {
     title: string
-    thumbnails: { default: { url: string } }
+    thumbnails: { medium: { url: string; width: number; height: number } }
   }
   contentDetails: { duration: string }
 }
@@ -115,12 +115,12 @@ function parseSongFromVideoJson(response: ApiRepsonse<VideoItem>): Song {
   return {
     videoId: item.id,
     title: trimTitle(item.snippet.title),
-    thumbnailUrl: item.snippet.thumbnails.default.url,
+    thumbnail: item.snippet.thumbnails.medium,
     durationInSeconds: duration,
     id: uuid(),
   }
 }
 
 function trimTitle(title: string): string {
-  return title.replace(/\s*[\(\[](audio|official audio)[\)\]]\s*$/i, '')
+  return title.replace(/\s*[\(\[](audio|official audio)[\)\]]\s*$/i, '') // eslint-disable-line no-useless-escape
 }

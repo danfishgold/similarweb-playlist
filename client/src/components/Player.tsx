@@ -26,12 +26,12 @@ export default function Player({ firstPlaylistSong, onEnd }: Props) {
   }
 
   return (
-    <div>
+    <div className='player'>
       <YouTube
         videoId={currentlyPlaying?.videoId}
         onReady={onReady}
         onEnd={onEnd}
-        opts={{ playerVars: { autoplay: 0 } }}
+        opts={{ playerVars: { autoplay: 1 } }}
       />
     </div>
   )

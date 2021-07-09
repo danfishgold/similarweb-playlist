@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="35px" height="27px" viewBox="0 0 35 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>Group Copy</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-Copy" transform="translate(1.000000, 1.000000)" fill="#000000">
+            <path d="M10.5,5 L31.5,5 C34,5 34,5 34,2.5 C34,-1.84852134e-14 34,-7.10542736e-15 31.5,-7.10542736e-15 L10.5,-7.10542736e-15 C8,-7.10542736e-15 8,-7.10542736e-15 8,2.5 C8,5 8,5 10.5,5 Z" id="Line" fill-rule="nonzero"></path>
+            <path d="M9.5,26 L32.5,26 C33.75,26 34,25.6216853 34,24.5 C34,23.3783147 33.75,23 32.5,23 L9.5,23 C8.25046048,23 8,23.2487189 8,24.5 C8,25.7512811 8.24560258,26 9.5,26 Z" id="Line-Copy-6" fill-rule="nonzero"></path>
+            <path d="M9.5,19 L32.5,19 C33.75,19 34,18.6216853 34,17.5 C34,16.3783147 33.75,16 32.5,16 L9.5,16 C8.25046048,16 8,16.2487189 8,17.5 C8,18.7512811 8.24560258,19 9.5,19 Z" id="Line-Copy-7" fill-rule="nonzero"></path>
+            <path d="M9.5,12 L32.5,12 C33.75,12 34,11.6216853 34,10.5 C34,9.3783147 33.75,9 32.5,9 L9.5,9 C8.25046048,9 8,9.24871891 8,10.5 C8,11.7512811 8.24560258,12 9.5,12 Z" id="Line-Copy-8" fill-rule="nonzero"></path>
+            <polygon id="Triangle" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" points="4 2.5 0 5 0 0"></polygon>
+        </g>
+    </g>
+</svg>

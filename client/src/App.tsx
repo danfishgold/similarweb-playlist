@@ -15,8 +15,10 @@ function App() {
 
   return (
     <main>
-      <SongInput />
-      <Playlist />
+      <div>
+        <SongInput />
+        <Playlist />
+      </div>
       <Player
         firstPlaylistSong={playlist.currentAndNextSongs[0] ?? null}
         onEnd={onCurrentSongEnd}

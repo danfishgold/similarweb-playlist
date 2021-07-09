@@ -6,7 +6,7 @@ export type Playlist = {
 export type Song = {
   videoId: string
   title: string
-  thumbnailUrl: string
+  thumbnail: { url: string; width: number; height: number }
   durationInSeconds: number
   id: string
 }
