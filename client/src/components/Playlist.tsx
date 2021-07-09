@@ -111,25 +111,25 @@ function SongItem({ song, playlistPosition }: SongProps) {
         </span>
         <div className='playlist-item__info__button-row'>
           {playlistPosition === 'current' && (
-            <IconButton onClick={skip} alt='skip' icon={skipIcon} />
+            <IconButton onClick={skip} title='Skip' icon={skipIcon} />
           )}
           {playlistPosition !== 'current' && (
-            <IconButton onClick={remove} alt='remove' icon={removeIcon} />
+            <IconButton onClick={remove} title='Remove' icon={removeIcon} />
           )}
           {playlistPosition !== 'current' && (
-            <IconButton onClick={playNow} alt='play now' icon={playNowIcon} />
+            <IconButton onClick={playNow} title='Play Now' icon={playNowIcon} />
           )}
           {playlistPosition === 'future' && (
             <IconButton
               onClick={playNext}
-              alt='play next'
+              title='Play Next'
               icon={playNextIcon}
             />
           )}
           {playlistPosition !== 'current' && song.id !== lastSongId && (
             <IconButton
               onClick={playLast}
-              alt='play last'
+              title='Play Last'
               icon={playLastIcon}
             />
           )}
@@ -141,15 +141,15 @@ function SongItem({ song, playlistPosition }: SongProps) {
 
 function IconButton({
   icon,
-  alt,
+  title,
   onClick,
 }: {
   icon: string
-  alt: string
+  title: string
   onClick: () => void
 }) {
   return (
-    <button className='icon-button' aria-label={alt} onClick={onClick}>
+    <button className='icon-button' title={title} onClick={onClick}>
       <img src={icon} alt='' />
     </button>
   )
