@@ -15,6 +15,13 @@ export default function SongInput() {
   })
   const [, dispatch] = usePlaylist()
 
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value)
+    if (songFetching.type === 'failed') {
+      setSongFetching({ type: 'notSubmitted' })
+    }
+  }
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -33,17 +40,21 @@ export default function SongInput() {
 
   return (
     <form className='song-input' onSubmit={onSubmit}>
-      <input
-        placeholder='Search'
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        disabled={songFetching.type === 'submitting'}
-      />
-      <button>
-        {songFetching.type === 'submitting' ? 'Searching' : 'Add song'}
-      </button>
+      <div className='song-input__controls'>
+        <input
+          placeholder='Search'
+          value={inputValue}
+          onChange={onInputChange}
+          disabled={songFetching.type === 'submitting'}
+        />
+        <button>
+          {songFetching.type === 'submitting' ? 'Searching' : 'Add song'}
+        </button>
+      </div>
       {songFetching.type === 'failed' && (
-        <p>Something went wrong. Try again later</p>
+        <p className='song-input__error'>
+          Something went wrong. Try again later
+        </p>
       )}
     </form>
   )

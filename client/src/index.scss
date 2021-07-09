@@ -20,25 +20,31 @@ main {
 }
 
 .song-input {
-  display: flex;
-  align-items: center;
-  margin: 0.5rem 0;
+  &__controls {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 0;
 
-  input {
-    flex-grow: 1;
-    height: 1.5rem;
-    font-size: 1rem;
-    border: 1px solid lightgray;
-    margin: 0;
-    padding: 0.25rem;
-    margin-right: 0.25rem;
-    border-radius: 0.25rem;
+    input {
+      flex-grow: 1;
+      height: 1.5rem;
+      font-size: 1rem;
+      border: 1px solid lightgray;
+      margin: 0;
+      padding: 0.25rem;
+      margin-right: 0.25rem;
+      border-radius: 0.25rem;
+    }
+
+    button {
+      height: 1.5rem;
+      padding: 0.25rem;
+      font-size: 1rem;
+    }
   }
 
-  button {
-    height: 1.5rem;
-    padding: 0.25rem;
-    font-size: 1rem;
+  &__error {
+    color: red;
   }
 }
 
