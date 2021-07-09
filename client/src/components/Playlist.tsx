@@ -1,11 +1,14 @@
 import React from 'react'
 import { Playlist as PlaylistType, Song } from 'shared/src/playlist'
-import { markAsPlayed, moveSong, removeSong } from '../reducer'
+import crj from '../crj'
+import { addSongs, markAsPlayed, moveSong, removeSong } from '../reducer'
 import { usePlaylist } from '../usePlaylist'
 
-type Props = { playlist: PlaylistType; addCRJ: () => void }
+type Props = {}
 
-export default function Playlist({ playlist, addCRJ }: Props) {
+export default function Playlist({}: Props) {
+  const [playlist, dispatch] = usePlaylist()
+  const addCRJ = () => dispatch(addSongs(crj))
   return (
     <div>
       <h2>Up next</h2>
