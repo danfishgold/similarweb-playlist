@@ -1,30 +1,38 @@
 import React from 'react'
-import { Song } from 'shared/src/playlist'
 import { v4 as uuid } from 'uuid'
-type Props = { onAddSong: (song: Song) => void }
+import { addSongs } from '../reducer'
+import { usePlaylist } from '../usePlaylist'
+
+type Props = {}
 
 type Metadata =
   | { type: 'notSubmitted' }
   | { type: 'submitting' }
   | { type: 'failed'; error: Error }
 
-export default function SongInput({ onAddSong }: Props) {
+export default function SongInput({}: Props) {
   const [inputValue, setInputValue] = React.useState('')
   const [metadata, setMetadata] = React.useState<Metadata>({
     type: 'notSubmitted',
   })
+  const [_, dispatch] = usePlaylist()
 
   const videoId = parseVideoIdFromInput(inputValue)
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    onAddSong({
-      url: inputValue,
-      title: 'pizza',
-      thumbnailUrl: 'pizza',
-      durationInSeconds: 1,
-      id: uuid(),
-    })
+
+    dispatch(
+      addSongs([
+        {
+          url: inputValue,
+          title: 'pizza',
+          thumbnailUrl: 'pizza',
+          durationInSeconds: 1,
+          id: uuid(),
+        },
+      ]),
+    )
     setInputValue('')
   }
 

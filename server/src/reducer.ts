@@ -1,39 +1,12 @@
-import { createAction } from '@reduxjs/toolkit'
-import { Playlist, Song } from 'shared/src/playlist'
-
-export type MutationMessage = ReturnType<
-  typeof mutations[keyof typeof mutations]
->
-
-export const addSongs = createAction('addSongs', withPayloadType<Song[]>())
-export const removeSong = createAction('removeSong', withPayloadType<string>())
-export const moveSong = createAction(
-  'moveSong',
-  withPayloadType<{ songId: string; toAfterId: string }>(),
-)
-export const markAsPlayed = createAction(
-  'markAsPlayed',
-  withPayloadType<string[]>(),
-)
-export const setPlaylist = createAction(
-  'setPlaylist',
-  withPayloadType<Playlist>(),
-)
-
-const mutations = {
-  addSongs,
-  removeSong,
-  moveSong,
-  markAsPlayed,
-  setPlaylist,
-}
+import { MutationMessage } from 'shared/src/messages'
+import { Playlist } from 'shared/src/playlist'
 
 export default function playlistReducer(
   playlist: Playlist,
   message: MutationMessage,
 ): Playlist {
   switch (message.type) {
-    case addSongs.type: {
+    case 'addSongs': {
       return {
         ...playlist,
         currentAndNextSongs: [
@@ -42,7 +15,7 @@ export default function playlistReducer(
         ],
       }
     }
-    case moveSong.type: {
+    case 'moveSong': {
       const oldIndex = playlist.currentAndNextSongs.findIndex(
         (song) => song.id === message.payload.songId,
       )
@@ -85,7 +58,7 @@ export default function playlistReducer(
         }
       }
     }
-    case removeSong.type: {
+    case 'removeSong': {
       return {
         ...playlist,
         currentAndNextSongs: playlist.currentAndNextSongs.filter(
@@ -93,7 +66,7 @@ export default function playlistReducer(
         ),
       }
     }
-    case markAsPlayed.type: {
+    case 'markAsPlayed': {
       const [songsToRemove, filteredNext] = partition(
         playlist.currentAndNextSongs,
         (song) => message.payload.includes(song.id),
@@ -104,14 +77,7 @@ export default function playlistReducer(
         currentAndNextSongs: filteredNext,
       }
     }
-    case setPlaylist.type: {
-      return message.payload
-    }
   }
-}
-
-function withPayloadType<T>() {
-  return (t: T) => ({ payload: t })
 }
 
 export function partition<T>(array: T[], fn: (item: T) => boolean): [T[], T[]] {

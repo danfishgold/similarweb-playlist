@@ -32,7 +32,14 @@ as a "dumb pipe".
   values in the tsconfig. I wasted a lot of time on this. Important to note:
   that code is sharable mainly because the back end implementation is naive. A
   more advanced back end would need separate logic, so maybe this duplication
-  isn't the worst thing.
+  isn't the worst thing. However, the action creators could and should have been
+  shared between the front end and the socket on the back end. This resulted in
+  some cumbersome type magic in client/src/reducer.ts
+- there's a single context for both the playlist and the dispatch. it might be
+  more efficient to split them into two providers (so that, for example, the
+  input field could only use the dispatch and not have to re-render every time
+  the playlist changes). This is a very simple change but we should measure the
+  loss in performance we're getting by keeping the code simpler.
 
 ## TODO
 

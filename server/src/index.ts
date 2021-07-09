@@ -2,9 +2,10 @@ import cors from 'cors'
 import express from 'express'
 import http from 'http'
 import path from 'path'
+import { MutationMessage } from 'shared/src/messages'
 import { Playlist } from 'shared/src/playlist'
 import { Server } from 'socket.io'
-import playlistReducer, { MutationMessage } from './reducer'
+import playlistReducer from './reducer'
 import { wrapIO } from './typesafeSocket'
 
 const app = express()
@@ -20,7 +21,7 @@ app.use(
 )
 
 const server = http.createServer(app)
-const io = wrapIO<MutationMessage>(
+const io = wrapIO(
   new Server(server, {
     cors: {
       origin:

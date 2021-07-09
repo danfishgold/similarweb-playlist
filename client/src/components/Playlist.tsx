@@ -1,7 +1,7 @@
 import React from 'react'
 import { Playlist as PlaylistType, Song } from 'shared/src/playlist'
 import { markAsPlayed, moveSong, removeSong } from '../reducer'
-import { usePlaylist, usePlaylistDispatch } from '../usePlaylist'
+import { usePlaylist } from '../usePlaylist'
 
 type Props = { playlist: PlaylistType; addCRJ: () => void }
 
@@ -61,8 +61,7 @@ type SongProps = {
 }
 
 function SongItem({ song, playlistPosition }: SongProps) {
-  const playlist = usePlaylist()
-  const dispatch = usePlaylistDispatch()
+  const [playlist, dispatch] = usePlaylist()
 
   const lastSongId = lastSongIdInPlaylist(playlist)
   const skip = () => dispatch(markAsPlayed([song.id]))

@@ -1,9 +1,6 @@
 import { createAction } from '@reduxjs/toolkit'
+import { MutationMessage } from 'shared/src/messages'
 import { Playlist, Song } from 'shared/src/playlist'
-
-export type MutationMessage = ReturnType<
-  typeof mutations[keyof typeof mutations]
->
 
 export const addSongs = createAction('addSongs', withPayloadType<Song[]>())
 export const removeSong = createAction('removeSong', withPayloadType<string>())
@@ -17,47 +14,55 @@ export const markAsPlayed = createAction(
 )
 export const setPlaylist = createAction(
   'setPlaylist',
-  withPayloadType<Playlist>(),
+  withPayloadType<{ playlist: Playlist; mutation?: MutationMessage }>(),
 )
 
-const mutations = {
-  addSongs,
-  removeSong,
-  moveSong,
-  markAsPlayed,
-  setPlaylist,
+type OutgoingSocketMessage =
+  | ReturnType<typeof addSongs>
+  | ReturnType<typeof removeSong>
+  | ReturnType<typeof moveSong>
+  | ReturnType<typeof markAsPlayed>
+
+export type Action = OutgoingSocketMessage | ReturnType<typeof setPlaylist>
+
+export function isOutgoingSocketMessage(
+  action: Action,
+): action is OutgoingSocketMessage {
+  return ['addSongs', 'removeSong', 'moveSong', 'markAsPlayed'].includes(
+    action.type,
+  )
 }
 
 export default function playlistReducer(
   playlist: Playlist,
-  message: MutationMessage,
+  action: Action,
 ): Playlist {
-  switch (message.type) {
+  switch (action.type) {
     case addSongs.type: {
       return {
         ...playlist,
         currentAndNextSongs: [
           ...playlist.currentAndNextSongs,
-          ...message.payload,
+          ...action.payload,
         ],
       }
     }
     case moveSong.type: {
       const oldIndex = playlist.currentAndNextSongs.findIndex(
-        (song) => song.id === message.payload.songId,
+        (song) => song.id === action.payload.songId,
       )
       if (oldIndex === -1) {
         throw new Error(
-          `Tried to move song with id ${message.payload.songId}, which isn't in the playlist`,
+          `Tried to move song with id ${action.payload.songId}, which isn't in the playlist`,
         )
       }
 
       const toAfterIndex = playlist.currentAndNextSongs.findIndex(
-        (song) => song.id === message.payload.toAfterId,
+        (song) => song.id === action.payload.toAfterId,
       )
       if (toAfterIndex === -1) {
         throw new Error(
-          `Tried to move song with id ${message.payload.songId} to after song id ${message.payload.toAfterId}, which isn't in the playlist`,
+          `Tried to move song with id ${action.payload.songId} to after song id ${action.payload.toAfterId}, which isn't in the playlist`,
         )
       }
 
@@ -89,14 +94,14 @@ export default function playlistReducer(
       return {
         ...playlist,
         currentAndNextSongs: playlist.currentAndNextSongs.filter(
-          (song) => song.id !== message.payload,
+          (song) => song.id !== action.payload,
         ),
       }
     }
     case markAsPlayed.type: {
       const [songsToRemove, filteredNext] = partition(
         playlist.currentAndNextSongs,
-        (song) => message.payload.includes(song.id),
+        (song) => action.payload.includes(song.id),
       )
 
       return {
@@ -105,7 +110,7 @@ export default function playlistReducer(
       }
     }
     case setPlaylist.type: {
-      return message.payload
+      return action.payload.playlist
     }
   }
 }

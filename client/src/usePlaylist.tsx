@@ -1,53 +1,52 @@
 import React from 'react'
 import { Playlist } from 'shared/src/playlist'
 import { io } from 'socket.io-client'
-import playlistReducer, { MutationMessage, setPlaylist } from './reducer'
+import playlistReducer, {
+  Action,
+  isOutgoingSocketMessage,
+  setPlaylist,
+} from './reducer'
 import { wrapIO } from './typesafeSocket'
+import useDelay from './useDelay'
 
-const PlaylistContext = React.createContext<Playlist | null>(null)
-PlaylistContext.displayName = 'PlaylistContext'
-
-const PlaylistDispatchContext = React.createContext<
-  ((action: MutationMessage) => void) | null
+const PlaylistContext = React.createContext<
+  [Playlist, (action: Action) => void] | null
 >(null)
-PlaylistDispatchContext.displayName = 'PlaylistDispatchContext'
+PlaylistContext.displayName = 'PlaylistContext'
 
 export function PlaylistProvider({
   url,
-  debounceTime,
+  delayTime = 250,
   children,
-}: React.PropsWithChildren<{ url: string; debounceTime: number }>) {
+}: React.PropsWithChildren<{ url: string; delayTime?: number }>) {
   const [playlist, dispatch] = React.useReducer(playlistReducer, {
     previousSongs: [],
     currentAndNextSongs: [],
   })
 
   const socket = React.useRef(wrapIO(io()))
-  const debounceTimeout = React.useRef<NodeJS.Timeout | null>(null)
+  const [possiblyDelay, resetDelay] = useDelay(delayTime)
   React.useEffect(() => {
     socket.current = wrapIO(io(url))
-    socket.current.on('playlist', ({ playlist }) => {
-      debounceTimeout.current = setTimeout(
-        () => dispatch(setPlaylist(playlist)),
-        debounceTime,
-      )
-    })
-  }, [url, debounceTime])
+    socket.current.on('playlist', ({ playlist }) =>
+      possiblyDelay(() => dispatch(setPlaylist({ playlist }))),
+    )
+  }, [url, possiblyDelay])
 
   const dispatchLocallyAndToSocket = React.useCallback(
-    (action: MutationMessage) => {
+    (action: Action) => {
       dispatch(action)
-      socket.current.emit('mutation', action)
-      debounceTimeout.current && clearTimeout(debounceTimeout.current)
+      if (isOutgoingSocketMessage(action)) {
+        socket.current.emit('mutation', action)
+        resetDelay()
+      }
     },
-    [],
+    [resetDelay],
   )
 
   return (
-    <PlaylistContext.Provider value={playlist}>
-      <PlaylistDispatchContext.Provider value={dispatchLocallyAndToSocket}>
-        {children}
-      </PlaylistDispatchContext.Provider>
+    <PlaylistContext.Provider value={[playlist, dispatchLocallyAndToSocket]}>
+      {children}
     </PlaylistContext.Provider>
   )
 }
@@ -60,14 +59,4 @@ export function usePlaylist() {
   }
 
   return playlist
-}
-
-export function usePlaylistDispatch() {
-  const dispatch = React.useContext(PlaylistDispatchContext)
-
-  if (!dispatch) {
-    throw new Error('TODO')
-  }
-
-  return dispatch
 }
