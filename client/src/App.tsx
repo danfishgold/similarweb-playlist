@@ -14,11 +14,11 @@ function App() {
 
   return (
     <main>
-      <Playlist />
       <Player
         firstPlaylistSong={playlist.currentAndNextSongs[0] ?? null}
         onEnd={onCurrentSongEnd}
       />
+      <Playlist />
     </main>
   )
 }
