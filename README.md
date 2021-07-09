@@ -46,7 +46,6 @@ as a "dumb pipe".
 - css and design
 - tests
 - handle ports more gracefully
-- use youtube api
 - handle errors (weird playlist updating in the backend, socket connection
   status, etc)
-- figure out a nicer way to not duplicate reducer.ts in front/back end
+- no-syncronization option
