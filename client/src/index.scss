@@ -14,28 +14,45 @@ main {
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr auto;
+  grid-template-rows: 1fr;
   gap: 2rem;
   padding: var(--pad);
 }
 
 .song-input {
-  grid-column: 1;
   display: flex;
   align-items: center;
+  margin: 0.5rem 0;
 
   input {
     flex-grow: 1;
+    height: 1.5rem;
+    font-size: 1rem;
+    border: 1px solid lightgray;
+    margin: 0;
+    padding: 0.25rem;
+    margin-right: 0.25rem;
+    border-radius: 0.25rem;
+  }
+
+  button {
+    height: 1.5rem;
+    padding: 0.25rem;
+    font-size: 1rem;
   }
 }
 
 .playlist {
-  grid-column: 1;
-  max-height: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 
   ul {
     padding: 0;
-    overflow: scroll;
-    max-height: 100%;
+    margin: 0;
+    overflow-y: auto;
+    flex-grow: 1;
   }
 }
 
@@ -46,7 +63,7 @@ main {
   border-radius: 0.5rem;
 
   &--current {
-    background: #eee;
+    background: rgb(239, 246, 246);
   }
 
   img {
@@ -77,9 +94,8 @@ main {
   }
 }
 
-.player {
-  grid-column: 2;
-  grid-row: 1 / span 2;
+button {
+  font-size: 1rem;
 }
 
 .icon-button {

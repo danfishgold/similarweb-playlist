@@ -8,6 +8,7 @@ import playLastIcon from '../icons/PlayLast.svg'
 import playNextIcon from '../icons/PlayNext.svg'
 import { addSongs, markAsPlayed, moveSong, removeSong } from '../reducer'
 import { usePlaylist } from '../usePlaylist'
+import SongInput from './SongInput'
 
 export default function Playlist() {
   const [playlist, dispatch] = usePlaylist()
@@ -15,6 +16,7 @@ export default function Playlist() {
   return (
     <div className='playlist'>
       <h2>Playlist</h2>
+      <SongInput />
       {playlist.currentAndNextSongs.length === 0 ? (
         <Placeholder>
           Your playlist is empty. Search for songs to add them to the playlist

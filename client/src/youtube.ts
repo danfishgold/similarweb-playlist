@@ -122,5 +122,9 @@ function parseSongFromVideoJson(response: ApiRepsonse<VideoItem>): Song {
 }
 
 function trimTitle(title: string): string {
-  return title.replace(/\s*[\(\[](audio|official audio)[\)\]]\s*$/i, '') // eslint-disable-line no-useless-escape
+  return title.replace(
+    // eslint-disable-next-line no-useless-escape
+    /\s*[\(\[](audio|video|official audio|official video)[\)\]]\s*$/i,
+    '',
+  )
 }

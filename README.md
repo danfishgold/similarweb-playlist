@@ -43,7 +43,6 @@ as a "dumb pipe".
 
 ## TODO
 
-- css and design
 - tests
 - handle ports more gracefully
 - handle errors (weird playlist updating in the backend, socket connection
