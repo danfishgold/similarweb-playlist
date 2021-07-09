@@ -17,8 +17,11 @@ export default function Playlist() {
       <h2>Playlist</h2>
       {playlist.currentAndNextSongs.length === 0 ? (
         <Placeholder>
-          No songs yet. Add YouTube links above or{' '}
-          <button onClick={addCRJ}>add some CRJ</button>
+          Your playlist is empty. Search for songs to add them to the playlist
+          or{' '}
+          <button className='text-button' onClick={addCRJ}>
+            just add some CRJ
+          </button>
         </Placeholder>
       ) : (
         <UpcomingSongs songs={playlist.currentAndNextSongs} />
@@ -108,35 +111,50 @@ function SongItem({ song, playlistPosition }: SongProps) {
         </span>
         <div className='playlist-item__info__button-row'>
           {playlistPosition === 'current' && (
-            <button onClick={skip} aria-label='skip'>
-              <img src={skipIcon} alt='' />
-            </button>
+            <IconButton onClick={skip} alt='skip' icon={skipIcon} />
           )}
           {playlistPosition !== 'current' && (
-            <button onClick={remove} aria-label='remove'>
-              <img src={removeIcon} alt='' />
-            </button>
+            <IconButton onClick={remove} alt='remove' icon={removeIcon} />
           )}
           {playlistPosition !== 'current' && (
-            <button onClick={playNow} aria-label='play now'>
-              <img src={playNowIcon} alt='' />
-            </button>
+            <IconButton onClick={playNow} alt='play now' icon={playNowIcon} />
           )}
           {playlistPosition === 'future' && (
-            <button onClick={playNext} aria-label='play next'>
-              <img src={playNextIcon} alt='' />
-            </button>
+            <IconButton
+              onClick={playNext}
+              alt='play next'
+              icon={playNextIcon}
+            />
           )}
           {playlistPosition !== 'current' && song.id !== lastSongId && (
-            <button onClick={playLast} aria-label='play last'>
-              <img src={playLastIcon} alt='' />
-            </button>
+            <IconButton
+              onClick={playLast}
+              alt='play last'
+              icon={playLastIcon}
+            />
           )}
         </div>
       </div>
     </li>
   )
 }
+
+function IconButton({
+  icon,
+  alt,
+  onClick,
+}: {
+  icon: string
+  alt: string
+  onClick: () => void
+}) {
+  return (
+    <button className='icon-button' aria-label={alt} onClick={onClick}>
+      <img src={icon} alt='' />
+    </button>
+  )
+}
+
 function allSongsUntil(id: string, playlist: PlaylistType): string[] {
   const index = playlist.currentAndNextSongs.findIndex(
     (aSong) => aSong.id === id,
