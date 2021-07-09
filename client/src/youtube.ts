@@ -114,9 +114,13 @@ function parseSongFromVideoJson(response: ApiRepsonse<VideoItem>): Song {
 
   return {
     videoId: item.id,
-    title: item.snippet.title,
+    title: trimTitle(item.snippet.title),
     thumbnailUrl: item.snippet.thumbnails.default.url,
     durationInSeconds: duration,
     id: uuid(),
   }
+}
+
+function trimTitle(title: string): string {
+  return title.replace(/\s*[\(\[](audio|official audio)[\)\]]\s*$/i, '')
 }
