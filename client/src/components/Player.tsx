@@ -31,7 +31,8 @@ export default function Player({ firstPlaylistSong, onEnd }: Props) {
         videoId={currentlyPlaying?.videoId}
         onReady={onReady}
         onEnd={onEnd}
-        opts={{ playerVars: { autoplay: 1 } }}
+        opts={{ width: '100%', height: 'auto', playerVars: { autoplay: 1 } }}
+        containerClassName={'youtubeContainer'}
       />
     </div>
   )

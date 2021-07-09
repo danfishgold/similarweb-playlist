@@ -13,7 +13,7 @@ main {
   max-width: 70rem;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 3fr 2fr;
   grid-template-rows: 1fr;
   gap: 2rem;
   padding: var(--pad);
@@ -140,5 +140,22 @@ button {
   &:active {
     color: black;
     background: rgb(207, 221, 221);
+  }
+}
+
+.youtubeContainer {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%;
+  overflow: hidden;
+  margin-bottom: 50px;
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 }
