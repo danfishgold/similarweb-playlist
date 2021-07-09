@@ -28,7 +28,7 @@ export default function Player({ firstPlaylistSong, onEnd }: Props) {
   return (
     <div>
       <YouTube
-        videoId={currentlyPlaying?.url}
+        videoId={currentlyPlaying?.videoId}
         onReady={onReady}
         onEnd={onEnd}
         opts={{ playerVars: { autoplay: 0 } }}

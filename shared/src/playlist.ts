@@ -4,7 +4,7 @@ export type Playlist = {
 }
 
 export type Song = {
-  url: string
+  videoId: string
   title: string
   thumbnailUrl: string
   durationInSeconds: number
