@@ -6,7 +6,7 @@ import playlistReducer, {
   isOutgoingSocketMessage,
   setPlaylist,
 } from './reducer'
-import { wrapIO } from './typesafeSocket'
+import { Socket, wrapIO } from './typesafeSocket'
 import useDelay from './useDelay'
 
 const PlaylistContext = React.createContext<
@@ -24,7 +24,7 @@ export function PlaylistProvider({
     currentAndNextSongs: [],
   })
 
-  const socket = React.useRef(wrapIO(io()))
+  const socket = React.useRef<Socket | null>()
   const [possiblyDelay, resetDelay] = useDelay(delayTime)
   React.useEffect(() => {
     socket.current = wrapIO(io(url))
@@ -37,7 +37,7 @@ export function PlaylistProvider({
     (action: Action) => {
       dispatch(action)
       if (isOutgoingSocketMessage(action)) {
-        socket.current.emit('mutation', action)
+        socket.current?.emit('mutation', action)
         resetDelay()
       }
     },
