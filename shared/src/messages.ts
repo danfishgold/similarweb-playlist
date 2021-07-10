@@ -9,6 +9,7 @@ export type Message = {
 export type PlaylistMessage = {
   playlist: Playlist
   mutation?: MutationMessage
+  fromCurrentUser: boolean
 }
 
 export type MutationMessage = AddSongs | RemoveSong | MoveSong | MarkAsPlayed

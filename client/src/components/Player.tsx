@@ -3,6 +3,7 @@ import YouTube, { YouTubeProps } from 'react-youtube'
 import { Song } from 'shared/src/playlist'
 import { skipCurrentSong } from '../reducer'
 import { usePlaylist } from '../usePlaylist'
+import SyncControls from './SyncControls'
 
 export default function Player() {
   const [{ playlist }, dispatch] = usePlaylist()
@@ -34,6 +35,7 @@ export default function Player() {
         opts={{ width: '100%', height: 'auto', playerVars: { autoplay: 1 } }}
         containerClassName={'youtubeContainer'}
       />
+      <SyncControls />
     </div>
   )
 }

@@ -56,7 +56,10 @@ export function renderWithStaticPlaylist(
 ) {
   jest
     .spyOn(playlistHook, 'usePlaylist')
-    .mockImplementation(() => [{ playlist, lastLocalMutation: null }, () => {}])
+    .mockImplementation(() => [
+      { playlist, lastLocalMutation: null, serverSync: { type: 'full' } },
+      () => {},
+    ])
 
   return render(ui)
 }

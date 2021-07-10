@@ -29,7 +29,10 @@ test('song addition works', async () => {
   expect(playlist.current).toHaveLength(crj.length + 1)
 
   // via socket
-  socket.emit('playlist', { playlist: [...playlist.current, buildSong()] })
+  socket.emit('playlist', {
+    playlist: [...playlist.current, buildSong()],
+    fromCurrentUser: false,
+  })
   await waitFor(() => expect(playlist.current).toHaveLength(crj.length + 2))
 })
 

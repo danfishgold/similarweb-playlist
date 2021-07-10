@@ -41,11 +41,12 @@ app.get('/playlist', (req, res) => {
 
 io.on('connection', (socket) => {
   connectionCount += 1
-  socket.emit('playlist', { playlist })
+  socket.emit('playlist', { playlist, fromCurrentUser: false })
 
   socket.on('mutation', (mutation: MutationMessage) => {
     playlist = playlistReducer(playlist, mutation)
-    io.emit('playlist', { playlist, mutation })
+    socket.emit('playlist', { playlist, mutation, fromCurrentUser: true })
+    socket.broadcast('playlist', { playlist, mutation, fromCurrentUser: false })
   })
 
   socket.on('disconnect', () => {
