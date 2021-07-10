@@ -22,11 +22,12 @@ describe('mutation buttons', () => {
       />,
       playlist,
     )
+    expect(buttonNamed(/skip/i)).toBeInTheDocument()
     expect(buttonNamed(/play now/i)).not.toBeInTheDocument()
     expect(buttonNamed(/play next/i)).not.toBeInTheDocument()
-    expect(buttonNamed(/play last/i)).not.toBeInTheDocument()
+    expect(buttonNamed(/move up/i)).not.toBeInTheDocument()
+    expect(buttonNamed(/move down/i)).not.toBeInTheDocument()
     expect(buttonNamed(/remove/i)).not.toBeInTheDocument()
-    expect(buttonNamed(/skip/i)).toBeInTheDocument()
   })
 
   test('it shows the right buttons for the next song', () => {
@@ -39,11 +40,12 @@ describe('mutation buttons', () => {
       />,
       playlist,
     )
+    expect(buttonNamed(/skip/i)).not.toBeInTheDocument()
     expect(buttonNamed(/play now/i)).toBeInTheDocument()
     expect(buttonNamed(/play next/i)).not.toBeInTheDocument()
-    expect(buttonNamed(/play last/i)).toBeInTheDocument()
+    expect(buttonNamed(/move up/i)).not.toBeInTheDocument()
+    expect(buttonNamed(/move down/i)).toBeInTheDocument()
     expect(buttonNamed(/remove/i)).toBeInTheDocument()
-    expect(buttonNamed(/skip/i)).not.toBeInTheDocument()
   })
 
   test('it shows the right buttons for future songs', () => {
@@ -56,11 +58,12 @@ describe('mutation buttons', () => {
       />,
       playlist,
     )
+    expect(buttonNamed(/skip/i)).not.toBeInTheDocument()
     expect(buttonNamed(/play now/i)).toBeInTheDocument()
     expect(buttonNamed(/play next/i)).toBeInTheDocument()
-    expect(buttonNamed(/play last/i)).toBeInTheDocument()
+    expect(buttonNamed(/move up/i)).toBeInTheDocument()
+    expect(buttonNamed(/move down/i)).toBeInTheDocument()
     expect(buttonNamed(/remove/i)).toBeInTheDocument()
-    expect(buttonNamed(/skip/i)).not.toBeInTheDocument()
   })
 
   test("it doesn't show the play last button if it's already the last song", () => {
@@ -73,11 +76,12 @@ describe('mutation buttons', () => {
       />,
       playlist,
     )
+    expect(buttonNamed(/skip/i)).not.toBeInTheDocument()
     expect(buttonNamed(/play now/i)).toBeInTheDocument()
     expect(buttonNamed(/play next/i)).toBeInTheDocument()
-    expect(buttonNamed(/play last/i)).not.toBeInTheDocument()
+    expect(buttonNamed(/move up/i)).toBeInTheDocument()
+    expect(buttonNamed(/move down/i)).not.toBeInTheDocument()
     expect(buttonNamed(/remove/i)).toBeInTheDocument()
-    expect(buttonNamed(/skip/i)).not.toBeInTheDocument()
   })
 })
 

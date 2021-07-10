@@ -56,12 +56,22 @@ test('playlist mutation works and is emitted to the socket', async () => {
   expect(playlist.current).toEqual(crj.slice(0, 5))
 
   // moving songs
-  userEvent.click(getByRole(nthLI(2), 'button', { name: /play last/i }))
+  userEvent.click(getByRole(nthLI(2), 'button', { name: /move down/i }))
   expect(socket.emitted).toHaveBeenLastCalledWith('mutation', {
     type: 'moveSong',
     payload: {
       songId: crj[2].id,
-      toAfterId: crj[4].id,
+      toAfterId: crj[3].id,
+    },
+  })
+  expect(playlist.current).toEqual(jumbledCRJ(0, 1, 3, 2, 4))
+
+  userEvent.click(getByRole(nthLI(4), 'button', { name: /move up/i }))
+  expect(socket.emitted).toHaveBeenLastCalledWith('mutation', {
+    type: 'moveSong',
+    payload: {
+      songId: crj[4].id,
+      toAfterId: crj[3].id,
     },
   })
   expect(playlist.current).toEqual(jumbledCRJ(0, 1, 3, 4, 2))

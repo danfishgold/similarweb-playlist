@@ -8,7 +8,8 @@ export const addSong = createAction('addSong', withPayloadType<Song>())
 export const setPlaylistToCRJ = createAction('setPlaylistToCRJ')
 export const removeSong = createAction('removeSong', withPayloadType<string>())
 export const playNext = createAction('playNext', withPayloadType<string>())
-export const playLast = createAction('playLast', withPayloadType<string>())
+export const moveUp = createAction('moveUp', withPayloadType<string>())
+export const moveDown = createAction('moveDown', withPayloadType<string>())
 export const skipCurrentSong = createAction('skipCurrentSong')
 export const playNow = createAction('playNow', withPayloadType<string>())
 export const setPlaylistToSocketVersion = createAction(
@@ -26,7 +27,8 @@ export type Action =
   | ReturnType<typeof setPlaylistToCRJ>
   | ReturnType<typeof removeSong>
   | ReturnType<typeof playNext>
-  | ReturnType<typeof playLast>
+  | ReturnType<typeof moveUp>
+  | ReturnType<typeof moveDown>
   | ReturnType<typeof skipCurrentSong>
   | ReturnType<typeof playNow>
   | ReturnType<typeof setPlaylistToSocketVersion>
@@ -68,10 +70,33 @@ export default function reducer(state: State, action: Action): State {
         lastLocalMutation: mutation,
       }
     }
-    case playLast.type: {
+    case moveUp.type: {
+      const currentIndex = state.playlist.findIndex(
+        (song) => song.id === action.payload,
+      )
+      if (currentIndex === -1 || currentIndex < 2) {
+        return state
+      }
       const mutation = mutations.moveSong({
         songId: action.payload,
-        toAfterId: state.playlist[state.playlist.length - 1].id,
+        toAfterId: state.playlist[currentIndex - 2].id,
+      })
+      return {
+        ...state,
+        playlist: mutations.updatePlaylist(state.playlist, mutation),
+        lastLocalMutation: mutation,
+      }
+    }
+    case moveDown.type: {
+      const currentIndex = state.playlist.findIndex(
+        (song) => song.id === action.payload,
+      )
+      if (currentIndex === -1 || currentIndex >= state.playlist.length - 2) {
+        return state
+      }
+      const mutation = mutations.moveSong({
+        songId: action.payload,
+        toAfterId: state.playlist[currentIndex + 1].id,
       })
       return {
         ...state,

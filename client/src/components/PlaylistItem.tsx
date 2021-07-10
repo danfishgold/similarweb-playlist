@@ -1,9 +1,10 @@
 import React from 'react'
 import { Song } from 'shared/src/playlist'
+import moveDownIcon from '../icons/ArrowDown.svg'
+import moveUpIcon from '../icons/ArrowUp.svg'
 import removeIcon from '../icons/Delete.svg'
 import skipIcon from '../icons/PlaybackNext.svg'
 import playNowIcon from '../icons/PlaybackPlay.svg'
-import playLastIcon from '../icons/PlayLast.svg'
 import playNextIcon from '../icons/PlayNext.svg'
 import * as actions from '../reducer'
 import { usePlaylist } from '../usePlaylist'
@@ -25,7 +26,8 @@ export default function PlaylistItem({
   const remove = () => dispatch(actions.removeSong(song.id))
   const playNow = () => dispatch(actions.playNow(song.id))
   const playNext = () => dispatch(actions.playNext(song.id))
-  const playLast = () => dispatch(actions.playLast(song.id))
+  const moveUp = () => dispatch(actions.moveUp(song.id))
+  const moveDown = () => dispatch(actions.moveDown(song.id))
 
   return (
     <li
@@ -52,12 +54,6 @@ export default function PlaylistItem({
           {playlistPosition === 'current' && (
             <IconButton onClick={skip} title='Skip' icon={skipIcon} />
           )}
-          {playlistPosition !== 'current' && (
-            <IconButton onClick={remove} title='Remove' icon={removeIcon} />
-          )}
-          {playlistPosition !== 'current' && (
-            <IconButton onClick={playNow} title='Play Now' icon={playNowIcon} />
-          )}
           {playlistPosition === 'future' && (
             <IconButton
               onClick={playNext}
@@ -65,12 +61,21 @@ export default function PlaylistItem({
               icon={playNextIcon}
             />
           )}
+          {playlistPosition === 'future' && (
+            <IconButton onClick={moveUp} title='Move Up' icon={moveUpIcon} />
+          )}
           {playlistPosition !== 'current' && !isLastSong && (
             <IconButton
-              onClick={playLast}
-              title='Play Last'
-              icon={playLastIcon}
+              onClick={moveDown}
+              title='Move Down'
+              icon={moveDownIcon}
             />
+          )}
+          {playlistPosition !== 'current' && (
+            <IconButton onClick={playNow} title='Play Now' icon={playNowIcon} />
+          )}
+          {playlistPosition !== 'current' && (
+            <IconButton onClick={remove} title='Remove' icon={removeIcon} />
           )}
         </div>
       </div>
