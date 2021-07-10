@@ -15,7 +15,11 @@ describe('mutation buttons', () => {
   test('it shows the right buttons for the currently playing song', () => {
     const playlist = buildPlaylist(3)
     renderWithStaticPlaylist(
-      <PlaylistItem song={playlist[0]} playlistPosition='current' />,
+      <PlaylistItem
+        song={playlist[0]}
+        playlistPosition='current'
+        isLastSong={false}
+      />,
       playlist,
     )
     expect(buttonNamed(/play now/i)).not.toBeInTheDocument()
@@ -28,7 +32,11 @@ describe('mutation buttons', () => {
   test('it shows the right buttons for the next song', () => {
     const playlist = buildPlaylist(3)
     renderWithStaticPlaylist(
-      <PlaylistItem song={playlist[1]} playlistPosition='next' />,
+      <PlaylistItem
+        song={playlist[1]}
+        playlistPosition='next'
+        isLastSong={false}
+      />,
       playlist,
     )
     expect(buttonNamed(/play now/i)).toBeInTheDocument()
@@ -41,7 +49,11 @@ describe('mutation buttons', () => {
   test('it shows the right buttons for future songs', () => {
     const playlist = buildPlaylist(4)
     renderWithStaticPlaylist(
-      <PlaylistItem song={playlist[2]} playlistPosition='future' />,
+      <PlaylistItem
+        song={playlist[2]}
+        playlistPosition='future'
+        isLastSong={false}
+      />,
       playlist,
     )
     expect(buttonNamed(/play now/i)).toBeInTheDocument()
@@ -54,7 +66,11 @@ describe('mutation buttons', () => {
   test("it doesn't show the play last button if it's already the last song", () => {
     const playlist = buildPlaylist(4)
     renderWithStaticPlaylist(
-      <PlaylistItem song={playlist[3]} playlistPosition='future' />,
+      <PlaylistItem
+        song={playlist[3]}
+        playlistPosition='future'
+        isLastSong={true}
+      />,
       playlist,
     )
     expect(buttonNamed(/play now/i)).toBeInTheDocument()
@@ -68,7 +84,7 @@ describe('mutation buttons', () => {
 test('it shows the thumbnail, title and duration of the song', () => {
   const song = buildSong({ overrides: { durationInSeconds: 65 } })
   const { container } = renderWithStaticPlaylist(
-    <PlaylistItem song={song} playlistPosition='current' />,
+    <PlaylistItem song={song} playlistPosition='current' isLastSong={true} />,
     [song],
   )
 

@@ -1,12 +1,11 @@
 import React from 'react'
 import { Song } from 'shared/src/playlist'
-import crj from '../crj'
-import { addSongs } from '../reducer'
+import { setPlaylistToCRJ } from '../reducer'
 import { usePlaylist } from '../usePlaylist'
 import PlaylistItem from './PlaylistItem'
 
 export default function Playlist() {
-  const [playlist] = usePlaylist()
+  const [{ playlist }] = usePlaylist()
   return (
     <div className='playlist'>
       {playlist.length === 0 ? (
@@ -20,7 +19,7 @@ export default function Playlist() {
 
 function Placeholder() {
   const [, dispatch] = usePlaylist()
-  const addCRJ = () => dispatch(addSongs(crj))
+  const addCRJ = () => dispatch(setPlaylistToCRJ())
 
   return (
     <div className='placeholder'>
@@ -39,6 +38,7 @@ function PlaylistItems({ songs }: { songs: Song[] }) {
         <PlaylistItem
           song={song}
           playlistPosition={playlistPositionForIndex(index)}
+          isLastSong={index === songs.length - 1}
           key={song.id}
         />
       ))}

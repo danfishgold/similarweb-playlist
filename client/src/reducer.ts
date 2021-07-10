@@ -1,91 +1,103 @@
 import { createAction } from '@reduxjs/toolkit'
 import { MutationMessage } from 'shared/src/messages'
 import { Playlist, Song } from 'shared/src/playlist'
+import crj from './crj'
+import * as mutations from './mutations'
 
-export const addSongs = createAction('addSongs', withPayloadType<Song[]>())
+export const addSong = createAction('addSong', withPayloadType<Song>())
+export const setPlaylistToCRJ = createAction('setPlaylistToCRJ')
 export const removeSong = createAction('removeSong', withPayloadType<string>())
-export const moveSong = createAction(
-  'moveSong',
-  withPayloadType<{ songId: string; toAfterId: string }>(),
-)
-export const markAsPlayed = createAction(
-  'markAsPlayed',
-  withPayloadType<string[]>(),
-)
-export const setPlaylist = createAction(
-  'setPlaylist',
+export const playNext = createAction('playNext', withPayloadType<string>())
+export const playLast = createAction('playLast', withPayloadType<string>())
+export const skipCurrentSong = createAction('skipCurrentSong')
+export const playNow = createAction('playNow', withPayloadType<string>())
+export const setPlaylistToSocketVersion = createAction(
+  'setPlaylistToSocketVersion',
   withPayloadType<{ playlist: Playlist; mutation?: MutationMessage }>(),
 )
 
-type OutgoingSocketMessage =
-  | ReturnType<typeof addSongs>
-  | ReturnType<typeof removeSong>
-  | ReturnType<typeof moveSong>
-  | ReturnType<typeof markAsPlayed>
-
-export type Action = OutgoingSocketMessage | ReturnType<typeof setPlaylist>
-
-export function isOutgoingSocketMessage(
-  action: Action,
-): action is OutgoingSocketMessage {
-  return ['addSongs', 'removeSong', 'moveSong', 'markAsPlayed'].includes(
-    action.type,
-  )
+export type State = {
+  playlist: Playlist
+  lastLocalMutation: MutationMessage | null
 }
 
-export default function playlistReducer(
-  playlist: Playlist,
-  action: Action,
-): Playlist {
+export type Action =
+  | ReturnType<typeof addSong>
+  | ReturnType<typeof setPlaylistToCRJ>
+  | ReturnType<typeof removeSong>
+  | ReturnType<typeof playNext>
+  | ReturnType<typeof playLast>
+  | ReturnType<typeof skipCurrentSong>
+  | ReturnType<typeof playNow>
+  | ReturnType<typeof setPlaylistToSocketVersion>
+
+export default function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case addSongs.type: {
-      return [...playlist, ...action.payload]
+    case addSong.type: {
+      const mutation = mutations.addSongs([action.payload])
+      return {
+        ...state,
+        playlist: mutations.updatePlaylist(state.playlist, mutation),
+        lastLocalMutation: mutation,
+      }
     }
-    case moveSong.type: {
-      const oldIndex = playlist.findIndex(
-        (song) => song.id === action.payload.songId,
-      )
-      if (oldIndex === -1) {
-        throw new Error(
-          `Tried to move song with id ${action.payload.songId}, which isn't in the playlist`,
-        )
-      }
-
-      const toAfterIndex = playlist.findIndex(
-        (song) => song.id === action.payload.toAfterId,
-      )
-      if (toAfterIndex === -1) {
-        throw new Error(
-          `Tried to move song with id ${action.payload.songId} to after song id ${action.payload.toAfterId}, which isn't in the playlist`,
-        )
-      }
-
-      const newIndex = toAfterIndex + 1
-
-      if (newIndex > oldIndex) {
-        return [
-          ...playlist.slice(0, oldIndex),
-          ...playlist.slice(oldIndex + 1, newIndex),
-          playlist[oldIndex],
-          ...playlist.slice(newIndex),
-        ]
-      } else {
-        return [
-          ...playlist.slice(0, newIndex),
-          playlist[oldIndex],
-          ...playlist.slice(newIndex, oldIndex),
-          ...playlist.slice(oldIndex + 1),
-        ]
+    case setPlaylistToCRJ.type: {
+      const mutation = mutations.addSongs(crj)
+      return {
+        ...state,
+        playlist: mutations.updatePlaylist(state.playlist, mutation),
+        lastLocalMutation: mutation,
       }
     }
     case removeSong.type: {
-      return playlist.filter((song) => song.id !== action.payload)
+      const mutation = mutations.removeSong(action.payload)
+      return {
+        ...state,
+        playlist: mutations.updatePlaylist(state.playlist, mutation),
+        lastLocalMutation: mutation,
+      }
     }
-    case markAsPlayed.type: {
-      return playlist.filter((song) => !action.payload.includes(song.id))
+    case playNext.type: {
+      const mutation = mutations.moveSong({
+        songId: action.payload,
+        toAfterId: state.playlist[0].id,
+      })
+      return {
+        ...state,
+        playlist: mutations.updatePlaylist(state.playlist, mutation),
+        lastLocalMutation: mutation,
+      }
     }
-    case setPlaylist.type: {
-      return action.payload.playlist
+    case playLast.type: {
+      const mutation = mutations.moveSong({
+        songId: action.payload,
+        toAfterId: state.playlist[state.playlist.length - 1].id,
+      })
+      return {
+        ...state,
+        playlist: mutations.updatePlaylist(state.playlist, mutation),
+        lastLocalMutation: mutation,
+      }
+    }
+    case skipCurrentSong.type: {
+      const mutation = mutations.markAsPlayed([state.playlist[0].id])
+      return {
+        ...state,
+        playlist: mutations.updatePlaylist(state.playlist, mutation),
+        lastLocalMutation: mutation,
+      }
+    }
+    case playNow.type: {
+      const songs = allSongIdsUntil(action.payload, state.playlist)
+      const mutation = mutations.markAsPlayed(songs)
+      return {
+        ...state,
+        playlist: mutations.updatePlaylist(state.playlist, mutation),
+        lastLocalMutation: mutation,
+      }
+    }
+    case setPlaylistToSocketVersion.type: {
+      return { ...state, playlist: action.payload.playlist }
     }
   }
 }
@@ -94,16 +106,11 @@ function withPayloadType<T>() {
   return (t: T) => ({ payload: t })
 }
 
-export function partition<T>(array: T[], fn: (item: T) => boolean): [T[], T[]] {
-  let trues = []
-  let falses = []
-  for (const item of array) {
-    if (fn(item)) {
-      trues.push(item)
-    } else {
-      falses.push(item)
-    }
+function allSongIdsUntil(id: string, playlist: Playlist): string[] {
+  const index = playlist.findIndex((aSong) => aSong.id === id)
+  if (index === -1) {
+    throw new Error(`Song with id ${id} not in playlist`)
   }
 
-  return [trues, falses]
+  return playlist.slice(0, index).map((song) => song.id)
 }

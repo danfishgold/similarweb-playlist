@@ -1,40 +1,31 @@
 import React from 'react'
-import { Playlist, Song } from 'shared/src/playlist'
+import { Song } from 'shared/src/playlist'
 import removeIcon from '../icons/Delete.svg'
 import skipIcon from '../icons/PlaybackNext.svg'
 import playNowIcon from '../icons/PlaybackPlay.svg'
 import playLastIcon from '../icons/PlayLast.svg'
 import playNextIcon from '../icons/PlayNext.svg'
-import { markAsPlayed, moveSong, removeSong } from '../reducer'
+import * as actions from '../reducer'
 import { usePlaylist } from '../usePlaylist'
 
 type Props = {
   song: Song
   playlistPosition: 'current' | 'next' | 'future'
+  isLastSong: boolean
 }
 
-export default function PlaylistItem({ song, playlistPosition }: Props) {
-  const [playlist, dispatch] = usePlaylist()
+export default function PlaylistItem({
+  song,
+  playlistPosition,
+  isLastSong,
+}: Props) {
+  const [, dispatch] = usePlaylist()
 
-  const lastSongId = lastSongIdInPlaylist(playlist)
-  const skip = () => dispatch(markAsPlayed([song.id]))
-  const remove = () => dispatch(removeSong(song.id))
-  const playNow = () => dispatch(markAsPlayed(allSongsUntil(song.id, playlist)))
-  const playNext = () => {
-    dispatch(
-      moveSong({
-        songId: song.id,
-        toAfterId: playlist[0].id,
-      }),
-    )
-  }
-  const playLast = () =>
-    dispatch(
-      moveSong({
-        songId: song.id,
-        toAfterId: lastSongId,
-      }),
-    )
+  const skip = () => dispatch(actions.skipCurrentSong())
+  const remove = () => dispatch(actions.removeSong(song.id))
+  const playNow = () => dispatch(actions.playNow(song.id))
+  const playNext = () => dispatch(actions.playNext(song.id))
+  const playLast = () => dispatch(actions.playLast(song.id))
 
   return (
     <li
@@ -74,7 +65,7 @@ export default function PlaylistItem({ song, playlistPosition }: Props) {
               icon={playNextIcon}
             />
           )}
-          {playlistPosition !== 'current' && song.id !== lastSongId && (
+          {playlistPosition !== 'current' && !isLastSong && (
             <IconButton
               onClick={playLast}
               title='Play Last'
@@ -108,15 +99,6 @@ function IconButton({
   )
 }
 
-function allSongsUntil(id: string, playlist: Playlist): string[] {
-  const index = playlist.findIndex((aSong) => aSong.id === id)
-  if (index === -1) {
-    throw new Error('TODO')
-  }
-
-  return playlist.slice(0, index).map((song) => song.id)
-}
-
 function formatDuration(duration: number): string {
   const minutes = Math.floor(duration / 60)
   const seconds = duration % 60
@@ -124,8 +106,4 @@ function formatDuration(duration: number): string {
   const secondsString = seconds < 10 ? `0${seconds}` : `${seconds}`
 
   return `${minutes}:${secondsString}`
-}
-
-function lastSongIdInPlaylist(playlist: Playlist): string {
-  return playlist[playlist.length - 1].id
 }

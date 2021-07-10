@@ -1,30 +1,30 @@
 import { MutationMessage } from 'shared/src/messages'
 import { Playlist } from 'shared/src/playlist'
 
-export default function playlistReducer(
+export default function updatePlaylist(
   playlist: Playlist,
-  message: MutationMessage,
+  mutation: MutationMessage,
 ): Playlist {
-  switch (message.type) {
+  switch (mutation.type) {
     case 'addSongs': {
-      return [...playlist, ...message.payload]
+      return [...playlist, ...mutation.payload]
     }
     case 'moveSong': {
       const oldIndex = playlist.findIndex(
-        (song) => song.id === message.payload.songId,
+        (song) => song.id === mutation.payload.songId,
       )
       if (oldIndex === -1) {
         throw new Error(
-          `Tried to move song with id ${message.payload.songId}, which isn't in the playlist`,
+          `Tried to move song with id ${mutation.payload.songId}, which isn't in the playlist`,
         )
       }
 
       const toAfterIndex = playlist.findIndex(
-        (song) => song.id === message.payload.toAfterId,
+        (song) => song.id === mutation.payload.toAfterId,
       )
       if (toAfterIndex === -1) {
         throw new Error(
-          `Tried to move song with id ${message.payload.songId} to after song id ${message.payload.toAfterId}, which isn't in the playlist`,
+          `Tried to move song with id ${mutation.payload.songId} to after song id ${mutation.payload.toAfterId}, which isn't in the playlist`,
         )
       }
 
@@ -47,24 +47,10 @@ export default function playlistReducer(
       }
     }
     case 'removeSong': {
-      return playlist.filter((song) => song.id !== message.payload)
+      return playlist.filter((song) => song.id !== mutation.payload)
     }
     case 'markAsPlayed': {
-      return playlist.filter((song) => !message.payload.includes(song.id))
+      return playlist.filter((song) => !mutation.payload.includes(song.id))
     }
   }
-}
-
-export function partition<T>(array: T[], fn: (item: T) => boolean): [T[], T[]] {
-  let trues = []
-  let falses = []
-  for (const item of array) {
-    if (fn(item)) {
-      trues.push(item)
-    } else {
-      falses.push(item)
-    }
-  }
-
-  return [trues, falses]
 }

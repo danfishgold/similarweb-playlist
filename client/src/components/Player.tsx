@@ -1,16 +1,16 @@
 import React from 'react'
 import YouTube, { YouTubeProps } from 'react-youtube'
 import { Song } from 'shared/src/playlist'
+import { skipCurrentSong } from '../reducer'
+import { usePlaylist } from '../usePlaylist'
 
-type Props = {
-  firstPlaylistSong: Song | null
-  onEnd: () => void
-}
-
-export default function Player({ firstPlaylistSong, onEnd }: Props) {
+export default function Player() {
+  const [{ playlist }, dispatch] = usePlaylist()
+  const firstPlaylistSong = playlist[0] ?? null
   const [currentlyPlaying, setCurrentlyPlaying] = React.useState<Song | null>(
     null,
   )
+  const onEnd = () => dispatch(skipCurrentSong())
   const player = React.useRef<any>()
   React.useEffect(() => {
     if (currentlyPlaying?.id !== firstPlaylistSong?.id) {

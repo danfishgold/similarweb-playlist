@@ -46,7 +46,7 @@ export function renderWithPlaylistProvider(
   }
 
   const renderResult = render(ui, { ...options, wrapper })
-  return { ...renderResult, socket, playlist, dispatch }
+  return { ...renderResult, socket, playlist }
 }
 
 export function renderWithStaticPlaylist(
@@ -56,7 +56,7 @@ export function renderWithStaticPlaylist(
 ) {
   jest
     .spyOn(playlistHook, 'usePlaylist')
-    .mockImplementation(() => [playlist, () => {}])
+    .mockImplementation(() => [{ playlist, lastLocalMutation: null }, () => {}])
 
   return render(ui)
 }
@@ -69,8 +69,8 @@ function Snitch({
   playlist: { current: Playlist }
   dispatch: { current: (action: Action) => void }
 }>) {
-  const [actualPlaylist, actualDispatch] = usePlaylist()
-  playlist.current = actualPlaylist
+  const [actualState, actualDispatch] = usePlaylist()
+  playlist.current = actualState.playlist
   dispatch.current = (action: Action) => act(() => actualDispatch(action))
   return <>{children}</>
 }

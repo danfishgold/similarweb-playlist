@@ -1,5 +1,5 @@
 import React from 'react'
-import { addSongs } from '../reducer'
+import { addSong } from '../reducer'
 import { usePlaylist } from '../usePlaylist'
 import { fetchSongForVideoIdOrSearchQuery } from '../youtube'
 
@@ -28,7 +28,7 @@ export default function SongInput() {
     setSongFetching({ type: 'submitting' })
     fetchSongForVideoIdOrSearchQuery(inputValue)
       .then((song) => {
-        dispatch(addSongs([song]))
+        dispatch(addSong(song))
         setSongFetching({ type: 'notSubmitted' })
         setInputValue('')
       })

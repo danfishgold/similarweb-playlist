@@ -1,8 +1,7 @@
-import { queryByText, screen } from '@testing-library/react'
+import { queryByText, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import crj from '../../crj'
-import { addSongs } from '../../reducer'
 import { buildPlaylist, renderWithPlaylistProvider } from '../../test/testUtils'
 import Playlist from '../Playlist'
 
@@ -20,12 +19,13 @@ describe('when the playlist is empty', () => {
   })
 })
 
-test("there's only one current item", () => {
-  const { playlist, dispatch, container } = renderWithPlaylistProvider(
+test("there's only one current item", async () => {
+  const { playlist, socket, container } = renderWithPlaylistProvider(
     <Playlist />,
   )
   const songs = buildPlaylist(4)
-  dispatch.current(addSongs(songs))
+  socket.emit('playlist', { playlist: songs })
+  await waitFor(() => expect(playlist.current).toHaveLength(4))
 
   const currentSongs = container.getElementsByClassName(
     'playlist-item--current',
@@ -36,13 +36,14 @@ test("there's only one current item", () => {
   expect(queryByText(currentSong, songs[0].title)).toBeInTheDocument()
 })
 
-test('the number of items is the same as the length of the playlist', () => {
-  const { playlist, dispatch, container } = renderWithPlaylistProvider(
+test('the number of items is the same as the length of the playlist', async () => {
+  const { playlist, socket, container } = renderWithPlaylistProvider(
     <Playlist />,
   )
   const songCount = 4
   const songs = buildPlaylist(songCount)
-  dispatch.current(addSongs(songs))
+  socket.emit('playlist', { playlist: songs })
+  await waitFor(() => expect(playlist.current).toHaveLength(4))
 
   const songItems = screen.getAllByRole('listitem')
   expect(songItems).toHaveLength(songCount)

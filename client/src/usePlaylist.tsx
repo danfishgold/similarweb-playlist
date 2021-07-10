@@ -1,16 +1,11 @@
 import React from 'react'
-import { Playlist } from 'shared/src/playlist'
 import { io } from 'socket.io-client'
-import playlistReducer, {
-  Action,
-  isOutgoingSocketMessage,
-  setPlaylist,
-} from './reducer'
+import reducer, { Action, setPlaylistToSocketVersion, State } from './reducer'
 import { Socket, wrapIO } from './typesafeSocket'
 import useDelay from './useDelay'
 
 const PlaylistContext = React.createContext<
-  [Playlist, (action: Action) => void] | null
+  [State, (action: Action) => void] | null
 >(null)
 PlaylistContext.displayName = 'PlaylistContext'
 
@@ -19,30 +14,32 @@ export function PlaylistProvider({
   delayTime = 250,
   children,
 }: React.PropsWithChildren<{ url: string; delayTime?: number }>) {
-  const [playlist, dispatch] = React.useReducer(playlistReducer, [])
+  const [state, dispatch] = React.useReducer(reducer, {
+    playlist: [],
+    lastLocalMutation: null,
+  })
 
   const socket = React.useRef<Socket | null>()
   const [possiblyDelay, resetDelay] = useDelay(delayTime)
+
+  // Incoming socket messages
   React.useEffect(() => {
     socket.current = wrapIO(io(url))
     socket.current.on('playlist', ({ playlist }) =>
-      possiblyDelay(() => dispatch(setPlaylist({ playlist }))),
+      possiblyDelay(() => dispatch(setPlaylistToSocketVersion({ playlist }))),
     )
   }, [url, possiblyDelay])
 
-  const dispatchLocallyAndToSocket = React.useCallback(
-    (action: Action) => {
-      dispatch(action)
-      if (isOutgoingSocketMessage(action)) {
-        socket.current?.emit('mutation', action)
-        resetDelay()
-      }
-    },
-    [resetDelay],
-  )
+  // Outgoing socket messages
+  React.useEffect(() => {
+    if (state.lastLocalMutation) {
+      socket.current?.emit('mutation', state.lastLocalMutation)
+      resetDelay()
+    }
+  }, [state.lastLocalMutation, resetDelay])
 
   return (
-    <PlaylistContext.Provider value={[playlist, dispatchLocallyAndToSocket]}>
+    <PlaylistContext.Provider value={[state, dispatch]}>
       {children}
     </PlaylistContext.Provider>
   )
