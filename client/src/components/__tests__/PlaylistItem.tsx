@@ -3,7 +3,7 @@ import React from 'react'
 import {
   buildPlaylist,
   buildSong,
-  renderWithFakePlaylistProvider,
+  renderWithStaticPlaylist,
 } from '../../test/testUtils'
 import PlaylistItem from '../PlaylistItem'
 
@@ -14,7 +14,7 @@ function buttonNamed(name: string | RegExp): HTMLElement | null {
 describe('mutation buttons', () => {
   test('it shows the right buttons for the currently playing song', () => {
     const playlist = buildPlaylist(3)
-    renderWithFakePlaylistProvider(
+    renderWithStaticPlaylist(
       <PlaylistItem song={playlist[0]} playlistPosition='current' />,
       playlist,
     )
@@ -27,7 +27,7 @@ describe('mutation buttons', () => {
 
   test('it shows the right buttons for the next song', () => {
     const playlist = buildPlaylist(3)
-    renderWithFakePlaylistProvider(
+    renderWithStaticPlaylist(
       <PlaylistItem song={playlist[1]} playlistPosition='next' />,
       playlist,
     )
@@ -40,7 +40,7 @@ describe('mutation buttons', () => {
 
   test('it shows the right buttons for future songs', () => {
     const playlist = buildPlaylist(4)
-    renderWithFakePlaylistProvider(
+    renderWithStaticPlaylist(
       <PlaylistItem song={playlist[2]} playlistPosition='future' />,
       playlist,
     )
@@ -53,7 +53,7 @@ describe('mutation buttons', () => {
 
   test("it doesn't show the play last button if it's already the last song", () => {
     const playlist = buildPlaylist(4)
-    renderWithFakePlaylistProvider(
+    renderWithStaticPlaylist(
       <PlaylistItem song={playlist[3]} playlistPosition='future' />,
       playlist,
     )
@@ -67,7 +67,7 @@ describe('mutation buttons', () => {
 
 test('it shows the thumbnail, title and duration of the song', () => {
   const song = buildSong({ overrides: { durationInSeconds: 65 } })
-  const { container } = renderWithFakePlaylistProvider(
+  const { container } = renderWithStaticPlaylist(
     <PlaylistItem song={song} playlistPosition='current' />,
     [song],
   )

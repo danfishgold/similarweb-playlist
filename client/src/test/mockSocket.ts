@@ -1,3 +1,4 @@
+import { act } from '@testing-library/react'
 import { Message } from 'shared/src/messages'
 import * as actualSocket from '../typesafeSocket'
 
@@ -11,7 +12,7 @@ export default function mockSocket(): {
   const mockedIO = {
     emit: emitted,
     on(type: string, callback: (payload: any) => void) {
-      callbacks[type] = callback
+      callbacks[type] = (payload) => act(() => callback(payload))
     },
   }
 

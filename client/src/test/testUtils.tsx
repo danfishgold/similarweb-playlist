@@ -1,12 +1,11 @@
 import { build, fake } from '@jackfranklin/test-data-bot'
-import { render, RenderOptions } from '@testing-library/react'
+import { act, render, RenderOptions } from '@testing-library/react'
 import React, { PropsWithChildren } from 'react'
 import { Playlist, Song } from 'shared/src/playlist'
 import { v4 as uuid } from 'uuid'
 import { Action } from '../reducer'
 import * as playlistHook from '../usePlaylist'
 import { PlaylistProvider, usePlaylist } from '../usePlaylist'
-import { mockPlaylistProvider } from './fakeUsePlaylist'
 import mockSocket from './mockSocket'
 
 export const buildSong = build<Song>({
@@ -29,30 +28,13 @@ export function buildPlaylist(length: number): Playlist {
     .map(() => buildSong())
 }
 
-export function renderWithFakePlaylistProvider(
-  ui: React.ReactElement,
-  playlist: Playlist,
-  options?: RenderOptions,
-) {
-  const [PlaylistProvider, usePlaylist, dispatch] =
-    mockPlaylistProvider(playlist)
-  jest.spyOn(playlistHook, 'usePlaylist').mockImplementation(usePlaylist)
-  const renderResult = render(ui, {
-    ...options,
-    wrapper: PlaylistProvider,
-  })
-
-  return { ...renderResult, dispatch }
-}
-
 export function renderWithPlaylistProvider(
   ui: React.ReactElement,
-  initialPlaylist: Playlist,
   options?: RenderOptions,
 ) {
   const socket = mockSocket()
   const playlist = { current: [] }
-  const dispatch = { current: () => {} }
+  const dispatch = { current: (action: Action) => {} }
   const wrapper = ({ children }: PropsWithChildren<{}>) => {
     return (
       <PlaylistProvider url=''>
@@ -64,7 +46,6 @@ export function renderWithPlaylistProvider(
   }
 
   const renderResult = render(ui, { ...options, wrapper })
-  socket.emit('playlist', { playlist: initialPlaylist })
   return { ...renderResult, socket, playlist, dispatch }
 }
 
@@ -90,6 +71,6 @@ function Snitch({
 }>) {
   const [actualPlaylist, actualDispatch] = usePlaylist()
   playlist.current = actualPlaylist
-  dispatch.current = actualDispatch
+  dispatch.current = (action: Action) => act(() => actualDispatch(action))
   return <>{children}</>
 }

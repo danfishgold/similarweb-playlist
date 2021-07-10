@@ -51,9 +51,12 @@ export default function PlaylistItem({ song, playlistPosition }: Props) {
       />
       <div className='playlist-item__info'>
         <strong className='playlist-item__info__title'>{song.title}</strong>
-        <span className='playlist-item__info__duration'>
+        <time
+          className='playlist-item__info__duration'
+          dateTime={`${formatDuration(song.durationInSeconds)}:00`}
+        >
           {formatDuration(song.durationInSeconds)}
-        </span>
+        </time>
         <div className='playlist-item__info__button-row'>
           {playlistPosition === 'current' && (
             <IconButton onClick={skip} title='Skip' icon={skipIcon} />

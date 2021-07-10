@@ -53,7 +53,7 @@ export default function SongInput() {
         </button>
       </div>
       {songFetching.type === 'failed' && (
-        <p className='song-input__error'>
+        <p className='song-input__error' role='alert'>
           Something went wrong. Try again later
         </p>
       )}
