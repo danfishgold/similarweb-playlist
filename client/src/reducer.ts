@@ -39,16 +39,10 @@ export default function playlistReducer(
 ): Playlist {
   switch (action.type) {
     case addSongs.type: {
-      return {
-        ...playlist,
-        currentAndNextSongs: [
-          ...playlist.currentAndNextSongs,
-          ...action.payload,
-        ],
-      }
+      return [...playlist, ...action.payload]
     }
     case moveSong.type: {
-      const oldIndex = playlist.currentAndNextSongs.findIndex(
+      const oldIndex = playlist.findIndex(
         (song) => song.id === action.payload.songId,
       )
       if (oldIndex === -1) {
@@ -57,7 +51,7 @@ export default function playlistReducer(
         )
       }
 
-      const toAfterIndex = playlist.currentAndNextSongs.findIndex(
+      const toAfterIndex = playlist.findIndex(
         (song) => song.id === action.payload.toAfterId,
       )
       if (toAfterIndex === -1) {
@@ -69,45 +63,26 @@ export default function playlistReducer(
       const newIndex = toAfterIndex + 1
 
       if (newIndex > oldIndex) {
-        return {
-          ...playlist,
-          currentAndNextSongs: [
-            ...playlist.currentAndNextSongs.slice(0, oldIndex),
-            ...playlist.currentAndNextSongs.slice(oldIndex + 1, newIndex),
-            playlist.currentAndNextSongs[oldIndex],
-            ...playlist.currentAndNextSongs.slice(newIndex),
-          ],
-        }
+        return [
+          ...playlist.slice(0, oldIndex),
+          ...playlist.slice(oldIndex + 1, newIndex),
+          playlist[oldIndex],
+          ...playlist.slice(newIndex),
+        ]
       } else {
-        return {
-          ...playlist,
-          currentAndNextSongs: [
-            ...playlist.currentAndNextSongs.slice(0, newIndex),
-            playlist.currentAndNextSongs[oldIndex],
-            ...playlist.currentAndNextSongs.slice(newIndex, oldIndex),
-            ...playlist.currentAndNextSongs.slice(oldIndex + 1),
-          ],
-        }
+        return [
+          ...playlist.slice(0, newIndex),
+          playlist[oldIndex],
+          ...playlist.slice(newIndex, oldIndex),
+          ...playlist.slice(oldIndex + 1),
+        ]
       }
     }
     case removeSong.type: {
-      return {
-        ...playlist,
-        currentAndNextSongs: playlist.currentAndNextSongs.filter(
-          (song) => song.id !== action.payload,
-        ),
-      }
+      return playlist.filter((song) => song.id !== action.payload)
     }
     case markAsPlayed.type: {
-      const [songsToRemove, filteredNext] = partition(
-        playlist.currentAndNextSongs,
-        (song) => action.payload.includes(song.id),
-      )
-
-      return {
-        previousSongs: [...playlist.previousSongs, ...songsToRemove],
-        currentAndNextSongs: filteredNext,
-      }
+      return playlist.filter((song) => !action.payload.includes(song.id))
     }
     case setPlaylist.type: {
       return action.payload.playlist

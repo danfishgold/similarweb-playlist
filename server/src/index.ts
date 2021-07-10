@@ -32,10 +32,7 @@ const io = wrapIO(
   }),
 )
 
-let playlist: Playlist = {
-  previousSongs: [],
-  currentAndNextSongs: [],
-}
+let playlist: Playlist = []
 let connectionCount = 0
 
 app.get('/playlist', (req, res) => {
@@ -54,7 +51,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     connectionCount -= 1
     if (connectionCount == 0) {
-      playlist = { previousSongs: [], currentAndNextSongs: [] }
+      playlist = []
     } else if (connectionCount < 0) {
       console.warn(`Connection count was ${connectionCount}. Reset to 0`)
       connectionCount = 0

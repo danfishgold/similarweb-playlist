@@ -1,7 +1,4 @@
-export type Playlist = {
-  previousSongs: Song[]
-  currentAndNextSongs: Song[]
-}
+export type Playlist = Song[]
 
 export type Song = {
   videoId: string

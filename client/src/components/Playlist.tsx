@@ -9,10 +9,10 @@ export default function Playlist() {
   const [playlist] = usePlaylist()
   return (
     <div className='playlist'>
-      {playlist.currentAndNextSongs.length === 0 ? (
+      {playlist.length === 0 ? (
         <Placeholder />
       ) : (
-        <PlaylistItems songs={playlist.currentAndNextSongs} />
+        <PlaylistItems songs={playlist} />
       )}
     </div>
   )

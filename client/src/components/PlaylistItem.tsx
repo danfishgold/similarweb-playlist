@@ -24,7 +24,7 @@ export default function PlaylistItem({ song, playlistPosition }: Props) {
     dispatch(
       moveSong({
         songId: song.id,
-        toAfterId: playlist.currentAndNextSongs[0].id,
+        toAfterId: playlist[0].id,
       }),
     )
   }
@@ -100,14 +100,12 @@ function IconButton({
 }
 
 function allSongsUntil(id: string, playlist: Playlist): string[] {
-  const index = playlist.currentAndNextSongs.findIndex(
-    (aSong) => aSong.id === id,
-  )
+  const index = playlist.findIndex((aSong) => aSong.id === id)
   if (index === -1) {
     throw new Error('TODO')
   }
 
-  return playlist.currentAndNextSongs.slice(0, index).map((song) => song.id)
+  return playlist.slice(0, index).map((song) => song.id)
 }
 
 function formatDuration(duration: number): string {
@@ -120,6 +118,5 @@ function formatDuration(duration: number): string {
 }
 
 function lastSongIdInPlaylist(playlist: Playlist): string {
-  return playlist.currentAndNextSongs[playlist.currentAndNextSongs.length - 1]
-    .id
+  return playlist[playlist.length - 1].id
 }

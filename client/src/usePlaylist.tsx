@@ -19,10 +19,7 @@ export function PlaylistProvider({
   delayTime = 250,
   children,
 }: React.PropsWithChildren<{ url: string; delayTime?: number }>) {
-  const [playlist, dispatch] = React.useReducer(playlistReducer, {
-    previousSongs: [],
-    currentAndNextSongs: [],
-  })
+  const [playlist, dispatch] = React.useReducer(playlistReducer, [])
 
   const socket = React.useRef<Socket | null>()
   const [possiblyDelay, resetDelay] = useDelay(delayTime)
