@@ -1,7 +1,7 @@
 import React from 'react'
 import { addSongs } from '../reducer'
 import { usePlaylist } from '../usePlaylist'
-import fetchSongForVideoIdOrSearchQuery from '../youtube'
+import { fetchSongForVideoIdOrSearchQuery } from '../youtube'
 
 type Metadata =
   | { type: 'notSubmitted' }
@@ -42,6 +42,7 @@ export default function SongInput() {
     <form className='song-input' onSubmit={onSubmit}>
       <div className='song-input__controls'>
         <input
+          aria-label='Search'
           placeholder='Search'
           value={inputValue}
           onChange={onInputChange}

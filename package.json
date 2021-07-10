@@ -9,11 +9,13 @@
     "client:install": "cd client && yarn install",
     "client:build": "cd client && yarn build",
     "client:start": "cd client && yarn start",
+    "client:test": "cd client && yarn test",
     "server:install": "cd server && yarn install",
     "server:start": "cd server && yarn start",
     "dev": "npm-run-all --parallel client:start server:start",
     "prestart": "yarn client:build",
-    "start": "yarn server:start"
+    "start": "yarn server:start",
+    "test": "npm-run-all --serial client:test"
   },
   "dependencies": {
     "npm-run-all": "^4.1.5"

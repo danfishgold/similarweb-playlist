@@ -43,6 +43,7 @@ export default function PlaylistItem({ song, playlistPosition }: Props) {
       }`}
     >
       <img
+        className='playlist-item__thumbnail'
         src={song.thumbnail.url}
         width={song.thumbnail.width}
         height={song.thumbnail.height}
@@ -93,7 +94,12 @@ function IconButton({
   onClick: () => void
 }) {
   return (
-    <button className='icon-button' title={title} onClick={onClick}>
+    <button
+      className='icon-button'
+      title={title}
+      aria-label={title}
+      onClick={onClick}
+    >
       <img src={icon} alt='' />
     </button>
   )

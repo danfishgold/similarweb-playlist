@@ -52,7 +52,7 @@ export function usePlaylist() {
   const playlist = React.useContext(PlaylistContext)
 
   if (!playlist) {
-    throw new Error('TODO')
+    throw new Error(`usePlaylist can't be used outside of a PlaylistProvider`)
   }
 
   return playlist

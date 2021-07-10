@@ -64,7 +64,7 @@ const searchUrl = (query: string) =>
 const videoDetailsUrl = (videoId: string) =>
   `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=snippet,contentDetails`
 
-export default async function fetchSongForVideoIdOrSearchQuery(
+export async function fetchSongForVideoIdOrSearchQuery(
   input: string,
 ): Promise<Song> {
   const videoId = parseVideoId(input) ?? (await fetchVideoIdForQuery(input))
