@@ -5,7 +5,7 @@ import {
 import { Song } from 'shared/src/playlist'
 import { v4 as uuid } from 'uuid'
 
-type ApiRepsonse<Item> = { error: string } | { items: Item[] }
+type ApiRepsonse<Item> = { error: { message: string } } | { items: Item[] }
 
 type VideoItem = {
   id: string
@@ -88,7 +88,7 @@ async function fetchSongFromId(videoId: string): Promise<Song> {
 
 function parseVideoIdFromSearchJson(response: ApiRepsonse<SearchItem>): string {
   if ('error' in response) {
-    throw new Error(response.error)
+    throw new Error(response.error.message)
   }
 
   if (response.items.length !== 1) {
@@ -100,7 +100,7 @@ function parseVideoIdFromSearchJson(response: ApiRepsonse<SearchItem>): string {
 
 function parseSongFromVideoJson(response: ApiRepsonse<VideoItem>): Song {
   if ('error' in response) {
-    throw new Error(response.error)
+    throw new Error(response.error.message)
   }
 
   if (response.items.length !== 1) {
