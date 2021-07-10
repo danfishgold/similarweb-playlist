@@ -7,7 +7,6 @@ import { usePlaylist } from './usePlaylist'
 
 function App() {
   const [playlist, dispatch] = usePlaylist()
-  console.log(playlist)
 
   const onCurrentSongEnd = () => {
     dispatch(markAsPlayed([playlist[0].id]))
