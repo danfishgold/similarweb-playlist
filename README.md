@@ -6,24 +6,11 @@ This is an exercise in my interview process for Similarweb. It was fun
 
 ## TODO
 
-- finish tests
 - handle ports more gracefully
 - handle errors (weird playlist updating in the backend, socket connection
   status, etc)
 - no-syncronization option
 - handle TODOs in code
-
-### tests
-
-- useDelay (might be tricky to test)
-- youtube (test actual response for known video)
-- usePlaylist (mock socket.io, initial state, dispatches locally and to socket)
-- reducer (just some nice logic testing, make sure no duplicate ids)
-- SongInput (calls youtube.ts functions, shows loading state, shows error)
-- Playlist (shows all songs, buttons dispatch actions correctly and appear on
-  correct items)
-- Player (I don't really know what to test here)
-- Integration (happy paths)
 
 ## The Server
 
@@ -126,6 +113,21 @@ the socket.io communication type safe.
 
 I know there's a better way to share code between projects but this is a home
 exercise.
+
+## Tests
+
+I did not test the backend because its only piece of logic was the playlist
+reducer, but the code for it is duplicated in the client, so tests on the client
+that verify its logic would also add verification to the server. _However_, on
+the client there are no explicit tests for the reducer because it is an
+implementation detail that should be tested (indirectly) by user/developer
+facing parts of the code. Mainly by integration tests.
+
+I wrote the tests close to the end of my alotted time so they're not very
+elegant. I had to use some hacks in my test utilities, I didn't test the
+`<Player>` component (as it's mostly a third party iframe), and I didn't test
+the `useDelay` hook becuase I knew I'd run into problems with mocking timers.
+But this is a home exercise.
 
 ## Considerations
 
