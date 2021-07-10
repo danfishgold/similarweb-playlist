@@ -12,7 +12,7 @@
     "server:install": "cd server && yarn install",
     "server:start": "cd server && yarn start",
     "dev": "npm-run-all --parallel client:start server:start",
-    "postinstall": "yarn client:build",
+    "prestart": "yarn client:build",
     "start": "yarn server:start"
   },
   "dependencies": {
