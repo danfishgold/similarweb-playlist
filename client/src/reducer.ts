@@ -49,6 +49,7 @@ export type Action =
   | ReturnType<typeof socketDisconnected>
 
 export default function reducer(state: State, action: Action): State {
+  console.log(action)
   switch (action.type) {
     case addSong.type: {
       const mutation = mutations.addSongs([action.payload])
@@ -149,6 +150,7 @@ export default function reducer(state: State, action: Action): State {
               ...state,
               playlist: action.payload.playlist,
               serverSync: { ...state.serverSync, serverPlaylist },
+              lastLocalMutation: null,
             }
           } else if (
             action.payload.mutation?.type === 'addSongs' &&
@@ -161,11 +163,13 @@ export default function reducer(state: State, action: Action): State {
                 action.payload.mutation,
               ),
               serverSync: { ...state.serverSync, serverPlaylist },
+              lastLocalMutation: null,
             }
           } else {
             return {
               ...state,
               serverSync: { ...state.serverSync, serverPlaylist },
+              lastLocalMutation: null,
             }
           }
         }
@@ -189,12 +193,14 @@ export default function reducer(state: State, action: Action): State {
             ? state.serverSync.serverPlaylist
             : state.playlist,
         serverSync: newServerSync,
+        lastLocalMutation: null,
       }
     }
     case socketDisconnected.type: {
       return {
         ...state,
         serverSync: { type: 'none', becauseDisconnected: true },
+        lastLocalMutation: null,
       }
     }
   }

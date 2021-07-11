@@ -111,7 +111,7 @@ context to share the state and dispatch function across the app. It also takes
 care of incoming/outgoing socket messages via `useEffect`. The state and
 dispatch come from `useReducer`. I wanted the flexibility this offered over
 redux so that I could do those socket side effects, but I imagine using redux
-wouldn't have changed _that_ much.
+would have helped with a hack I had to use for the outgoing messages.
 
 Note that the state and dispatch are referenced in a single context, while some
 parts of the app only need one. This causes redundant renders (mainly on the
