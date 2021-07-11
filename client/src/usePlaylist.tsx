@@ -1,6 +1,11 @@
 import React from 'react'
 import { io } from 'socket.io-client'
-import reducer, { Action, setPlaylistToSocketVersion, State } from './reducer'
+import reducer, {
+  Action,
+  receivePlaylistFromSocket,
+  socketDisconnected,
+  State,
+} from './reducer'
 import { Socket, wrapIO } from './typesafeSocket'
 import useDelay from './useDelay'
 
@@ -17,26 +22,48 @@ export function PlaylistProvider({
   const [state, dispatch] = React.useReducer(reducer, {
     playlist: [],
     lastLocalMutation: null,
+    serverSync: { type: 'full' },
   })
 
   const socket = React.useRef<Socket | null>()
   const [possiblyDelay, resetDelay] = useDelay(delayTime)
 
-  // Incoming socket messages
+  // Create socket and subscribe to incoming messages
   React.useEffect(() => {
-    socket.current = wrapIO(io(url))
-    socket.current.on('playlist', ({ playlist }) =>
-      possiblyDelay(() => dispatch(setPlaylistToSocketVersion({ playlist }))),
-    )
-  }, [url, possiblyDelay])
-
-  // Outgoing socket messages
-  React.useEffect(() => {
-    if (state.lastLocalMutation) {
-      socket.current?.emit('mutation', state.lastLocalMutation)
-      resetDelay()
+    if (state.serverSync.type === 'none') {
+      socket.current = null
+      return
     }
-  }, [state.lastLocalMutation, resetDelay])
+
+    if (!socket.current) {
+      socket.current = wrapIO(io(url))
+    }
+    socket.current.removeAllListeners('playlist')
+    socket.current.on('playlist', (payload) => {
+      possiblyDelay(() => dispatch(receivePlaylistFromSocket(payload)))
+    })
+
+    socket.current.removeAllListeners('disconnect')
+    socket.current.on('disconnect', () => {
+      dispatch(socketDisconnected())
+    })
+  }, [url, possiblyDelay, state.serverSync.type])
+
+  // Outgoing socket messages. This is a hack
+  React.useEffect(() => {
+    if (!state.lastLocalMutation) {
+      return
+    } else if (state.serverSync.type === 'none') {
+      return
+    } else if (
+      state.serverSync.type === 'partial' &&
+      state.lastLocalMutation.type !== 'addSongs'
+    ) {
+      return
+    }
+    socket.current?.emit('mutation', state.lastLocalMutation)
+    resetDelay()
+  }, [state.lastLocalMutation, resetDelay, state.serverSync.type])
 
   return (
     <PlaylistContext.Provider value={[state, dispatch]}>

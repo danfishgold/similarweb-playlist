@@ -2,6 +2,7 @@ import React from 'react'
 import Player from './components/Player'
 import Playlist from './components/Playlist'
 import SongInput from './components/SongInput'
+import SyncControls from './components/SyncControls'
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <SongInput />
         <Playlist />
       </div>
+      <SyncControls />
     </main>
   )
 }

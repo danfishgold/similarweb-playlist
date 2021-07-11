@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit'
-import { MutationMessage } from 'shared/src/messages'
+import { MutationMessage, PlaylistMessage } from 'shared/src/messages'
 import { Playlist, Song } from 'shared/src/playlist'
 import crj from './crj'
 import * as mutations from './mutations'
@@ -12,15 +12,28 @@ export const moveUp = createAction('moveUp', withPayloadType<string>())
 export const moveDown = createAction('moveDown', withPayloadType<string>())
 export const skipCurrentSong = createAction('skipCurrentSong')
 export const playNow = createAction('playNow', withPayloadType<string>())
-export const setPlaylistToSocketVersion = createAction(
-  'setPlaylistToSocketVersion',
-  withPayloadType<{ playlist: Playlist; mutation?: MutationMessage }>(),
+export const receivePlaylistFromSocket = createAction(
+  'receivePlaylistFromSocket',
+  withPayloadType<PlaylistMessage>(),
 )
+export const setServerSyncInControls = createAction(
+  'setServerSyncInControls',
+  withPayloadType<ServerSyncType>(),
+)
+export const socketDisconnected = createAction('socketDisconnected')
 
 export type State = {
   playlist: Playlist
   lastLocalMutation: MutationMessage | null
+  serverSync: ServerSync
 }
+
+export type ServerSyncType = 'full' | 'partial' | 'none'
+
+type ServerSync =
+  | { type: 'none'; becauseDisconnected: boolean }
+  | { type: 'partial'; serverPlaylist: Playlist }
+  | { type: 'full' }
 
 export type Action =
   | ReturnType<typeof addSong>
@@ -31,7 +44,9 @@ export type Action =
   | ReturnType<typeof moveDown>
   | ReturnType<typeof skipCurrentSong>
   | ReturnType<typeof playNow>
-  | ReturnType<typeof setPlaylistToSocketVersion>
+  | ReturnType<typeof receivePlaylistFromSocket>
+  | ReturnType<typeof setServerSyncInControls>
+  | ReturnType<typeof socketDisconnected>
 
 export default function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -44,7 +59,7 @@ export default function reducer(state: State, action: Action): State {
       }
     }
     case setPlaylistToCRJ.type: {
-      const mutation = mutations.addSongs(crj)
+      const mutation = mutations.addSongs(crj())
       return {
         ...state,
         playlist: mutations.updatePlaylist(state.playlist, mutation),
@@ -121,8 +136,83 @@ export default function reducer(state: State, action: Action): State {
         lastLocalMutation: mutation,
       }
     }
-    case setPlaylistToSocketVersion.type: {
-      return { ...state, playlist: action.payload.playlist }
+    case receivePlaylistFromSocket.type: {
+      switch (state.serverSync.type) {
+        case 'full': {
+          return { ...state, playlist: action.payload.playlist }
+        }
+        case 'partial': {
+          const serverPlaylist = action.payload.playlist
+          const isFirstPlaylistMessage = !action.payload.mutation
+          if (isFirstPlaylistMessage) {
+            return {
+              ...state,
+              playlist: action.payload.playlist,
+              serverSync: { ...state.serverSync, serverPlaylist },
+            }
+          } else if (
+            action.payload.mutation?.type === 'addSongs' &&
+            !action.payload.fromCurrentUser
+          ) {
+            return {
+              ...state,
+              playlist: mutations.updatePlaylist(
+                state.playlist,
+                action.payload.mutation,
+              ),
+              serverSync: { ...state.serverSync, serverPlaylist },
+            }
+          } else {
+            return {
+              ...state,
+              serverSync: { ...state.serverSync, serverPlaylist },
+            }
+          }
+        }
+        case 'none': {
+          return state
+        }
+      }
+    }
+    // this eslint disable is here because it's not smart enough to know that
+    // the switch statement above is exhaustive
+    // eslint-disable-next-line no-fallthrough
+    case setServerSyncInControls.type: {
+      const newServerSync = serverSyncFromUserInput(
+        action.payload,
+        state.playlist,
+      )
+      return {
+        ...state,
+        playlist:
+          state.serverSync.type === 'partial' && newServerSync.type === 'full'
+            ? state.serverSync.serverPlaylist
+            : state.playlist,
+        serverSync: newServerSync,
+      }
+    }
+    case socketDisconnected.type: {
+      return {
+        ...state,
+        serverSync: { type: 'none', becauseDisconnected: true },
+      }
+    }
+  }
+}
+
+function serverSyncFromUserInput(
+  type: ServerSyncType,
+  playlist: Playlist,
+): ServerSync {
+  switch (type) {
+    case 'full': {
+      return { type: 'full' }
+    }
+    case 'partial': {
+      return { type: 'partial', serverPlaylist: playlist }
+    }
+    case 'none': {
+      return { type: 'none', becauseDisconnected: false }
     }
   }
 }

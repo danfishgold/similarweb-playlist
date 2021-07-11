@@ -14,6 +14,9 @@ export default function mockSocket(): {
     on(type: string, callback: (payload: any) => void) {
       callbacks[type] = (payload) => act(() => callback(payload))
     },
+    removeAllListeners: (type: keyof Message | 'disconnect') => {
+      callbacks[type] = () => {}
+    },
   }
 
   jest.spyOn(actualSocket, 'wrapIO').mockImplementation(() => mockedIO)

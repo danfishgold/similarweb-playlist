@@ -16,6 +16,7 @@ type IO = {
 
 export type Socket = {
   emit: <T extends keyof Message>(type: T, payload: Message[T]) => void
+  broadcast: <T extends keyof Message>(type: T, payload: Message[T]) => void
   on: <T extends keyof SocketEvents>(
     type: T,
     handler: (payload: SocketEvents[T]) => void,
@@ -40,6 +41,7 @@ export function wrapIO(io: Server): IO {
 function wrapSocket(socket: OriginalSocket): Socket {
   return {
     emit: socket.emit.bind(socket),
+    broadcast: socket.broadcast.emit.bind(socket.broadcast),
     on: socket.on.bind(socket) as any,
   }
 }

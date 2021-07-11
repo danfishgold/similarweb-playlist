@@ -1,5 +1,10 @@
 import { build, fake } from '@jackfranklin/test-data-bot'
-import { act, render, RenderOptions } from '@testing-library/react'
+import {
+  act,
+  render,
+  RenderOptions,
+  RenderResult,
+} from '@testing-library/react'
 import React, { PropsWithChildren } from 'react'
 import { Playlist, Song } from 'shared/src/playlist'
 import { v4 as uuid } from 'uuid'
@@ -31,7 +36,10 @@ export function buildPlaylist(length: number): Playlist {
 export function renderWithPlaylistProvider(
   ui: React.ReactElement,
   options?: RenderOptions,
-) {
+): RenderResult & {
+  playlist: { current: Playlist }
+  socket: ReturnType<typeof mockSocket>
+} {
   const socket = mockSocket()
   const playlist = { current: [] }
   const dispatch = { current: (action: Action) => {} }
@@ -56,7 +64,10 @@ export function renderWithStaticPlaylist(
 ) {
   jest
     .spyOn(playlistHook, 'usePlaylist')
-    .mockImplementation(() => [{ playlist, lastLocalMutation: null }, () => {}])
+    .mockImplementation(() => [
+      { playlist, lastLocalMutation: null, serverSync: { type: 'full' } },
+      () => {},
+    ])
 
   return render(ui)
 }
