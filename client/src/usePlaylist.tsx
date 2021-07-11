@@ -63,7 +63,7 @@ export function PlaylistProvider({
     }
     socket.current?.emit('mutation', state.lastLocalMutation)
     resetDelay()
-  }, [state.lastLocalMutation, resetDelay])
+  }, [state.lastLocalMutation, resetDelay, state.serverSync.type])
 
   return (
     <PlaylistContext.Provider value={[state, dispatch]}>

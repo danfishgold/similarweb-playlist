@@ -174,6 +174,9 @@ export default function reducer(state: State, action: Action): State {
         }
       }
     }
+    // this eslint disable is here because it's not smart enough to know that
+    // the switch statement above is exhaustive
+    // eslint-disable-next-line no-fallthrough
     case setServerSyncInControls.type: {
       const newServerSync = serverSyncFromUserInput(
         action.payload,
