@@ -67,6 +67,23 @@ const videoDetailsUrl = (videoId: string) =>
 export async function fetchSongForVideoIdOrSearchQuery(
   input: string,
 ): Promise<Song> {
+  if (!apiKey) {
+    const videoId = parseVideoId(input)
+    if (!videoId) {
+      throw new Error(`Can't search YouTube because the API key is missing`)
+    }
+    return {
+      id: uuid(),
+      videoId,
+      title: 'YouTube API key is missing in .env',
+      durationInSeconds: 83,
+      thumbnail: {
+        url: 'http://placekitten.com/320/180',
+        width: 320,
+        height: 180,
+      },
+    }
+  }
   const videoId = parseVideoId(input) ?? (await fetchVideoIdForQuery(input))
   return await fetchSongFromId(videoId)
 }
