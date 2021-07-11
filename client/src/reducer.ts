@@ -59,7 +59,7 @@ export default function reducer(state: State, action: Action): State {
       }
     }
     case setPlaylistToCRJ.type: {
-      const mutation = mutations.addSongs(crj)
+      const mutation = mutations.addSongs(crj())
       return {
         ...state,
         playlist: mutations.updatePlaylist(state.playlist, mutation),

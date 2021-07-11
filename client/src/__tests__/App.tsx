@@ -3,9 +3,11 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Song } from 'shared/src/playlist'
 import App from '../App'
-import crj from '../crj'
+import crj, { crjCount } from '../crj'
 import { buildSong, renderWithPlaylistProvider } from '../test/testUtils'
 import * as youtube from '../youtube'
+
+jest.mock('../crj.ts')
 
 test('song addition works', async () => {
   jest
@@ -19,21 +21,21 @@ test('song addition works', async () => {
 
   // via CRJ button
   userEvent.click(screen.getByRole('button', { name: /add some crj/i }))
-  expect(playlist.current).toHaveLength(crj.length)
+  expect(playlist.current).toHaveLength(crjCount)
 
   // via search box
   const searchBox = screen.getByRole('textbox', { name: /search/i })
   userEvent.type(searchBox, 'pizza')
   userEvent.click(screen.getByRole('button', { name: /add song/i }))
   await waitFor(() => expect(searchBox).toHaveValue(''))
-  expect(playlist.current).toHaveLength(crj.length + 1)
+  expect(playlist.current).toHaveLength(crjCount + 1)
 
   // via socket
   socket.emit('playlist', {
     playlist: [...playlist.current, buildSong()],
     fromCurrentUser: false,
   })
-  await waitFor(() => expect(playlist.current).toHaveLength(crj.length + 2))
+  await waitFor(() => expect(playlist.current).toHaveLength(crjCount + 2))
 })
 
 test('playlist mutation works and is emitted to the socket', async () => {
@@ -43,28 +45,28 @@ test('playlist mutation works and is emitted to the socket', async () => {
   userEvent.click(screen.getByRole('button', { name: /add some crj/i }))
   expect(socket.emitted).toHaveBeenLastCalledWith('mutation', {
     type: 'addSongs',
-    payload: crj,
+    payload: crj(),
   })
-  expect(playlist.current).toEqual(crj)
+  expect(playlist.current).toEqual(crj())
 
   // removing songs
-  expect(crj.length).toBeGreaterThan(5)
-  for (let index = 5; index < crj.length; index++) {
+  expect(crjCount).toBeGreaterThan(5)
+  for (let index = 5; index < crjCount; index++) {
     userEvent.click(getByRole(nthLI(5), 'button', { name: /remove/i }))
     expect(socket.emitted).toHaveBeenLastCalledWith('mutation', {
       type: 'removeSong',
-      payload: crj[index].id,
+      payload: crjAt(index).id,
     })
   }
-  expect(playlist.current).toEqual(crj.slice(0, 5))
+  expect(playlist.current).toEqual(crj().slice(0, 5))
 
   // moving songs
   userEvent.click(getByRole(nthLI(2), 'button', { name: /move down/i }))
   expect(socket.emitted).toHaveBeenLastCalledWith('mutation', {
     type: 'moveSong',
     payload: {
-      songId: crj[2].id,
-      toAfterId: crj[3].id,
+      songId: crjAt(2).id,
+      toAfterId: crjAt(3).id,
     },
   })
   expect(playlist.current).toEqual(jumbledCRJ(0, 1, 3, 2, 4))
@@ -73,8 +75,8 @@ test('playlist mutation works and is emitted to the socket', async () => {
   expect(socket.emitted).toHaveBeenLastCalledWith('mutation', {
     type: 'moveSong',
     payload: {
-      songId: crj[4].id,
-      toAfterId: crj[3].id,
+      songId: crjAt(4).id,
+      toAfterId: crjAt(3).id,
     },
   })
   expect(playlist.current).toEqual(jumbledCRJ(0, 1, 3, 4, 2))
@@ -83,8 +85,8 @@ test('playlist mutation works and is emitted to the socket', async () => {
   expect(socket.emitted).toHaveBeenLastCalledWith('mutation', {
     type: 'moveSong',
     payload: {
-      songId: crj[4].id,
-      toAfterId: crj[0].id,
+      songId: crjAt(4).id,
+      toAfterId: crjAt(0).id,
     },
   })
   expect(playlist.current).toEqual(jumbledCRJ(0, 4, 1, 3, 2))
@@ -93,20 +95,24 @@ test('playlist mutation works and is emitted to the socket', async () => {
   userEvent.click(getByRole(nthLI(0), 'button', { name: /skip/i }))
   expect(socket.emitted).toHaveBeenLastCalledWith('mutation', {
     type: 'markAsPlayed',
-    payload: [crj[0].id],
+    payload: [crjAt(0).id],
   })
   expect(playlist.current).toEqual(jumbledCRJ(4, 1, 3, 2))
 
   userEvent.click(getByRole(nthLI(2), 'button', { name: /play now/i }))
   expect(socket.emitted).toHaveBeenLastCalledWith('mutation', {
     type: 'markAsPlayed',
-    payload: [crj[4].id, crj[1].id],
+    payload: [crjAt(4).id, crjAt(1).id],
   })
   expect(playlist.current).toEqual(jumbledCRJ(3, 2))
 })
 
+function crjAt(index: number): Song {
+  return crj()[index]
+}
+
 function jumbledCRJ(...indices: number[]): Song[] {
-  return indices.map((index) => crj[index])
+  return indices.map((index) => crjAt(index))
 }
 
 function nthLI(n: number): HTMLElement {

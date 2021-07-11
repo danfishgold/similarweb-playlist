@@ -1,7 +1,7 @@
 import { Song } from 'shared/src/playlist'
 import { v4 as uuid } from 'uuid'
 
-const crj = (): Song[] => [
+const fakeCrj: Song[] = [
   {
     videoId: 'kV9sNmujCPk',
     title: 'Carly Rae Jepsen - E·MO·TION',
@@ -81,6 +81,6 @@ const crj = (): Song[] => [
   },
 ]
 
-export default crj
+export default () => fakeCrj
 
-export const crjCount = crj().length
+export const crjCount = fakeCrj.length
