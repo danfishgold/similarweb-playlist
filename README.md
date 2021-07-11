@@ -122,12 +122,14 @@ complexity of the code.
 
 ### Design
 
-I used icons from Parakeet Primaries (and made the ones for play next/last
-myself). I used Tailwind's blue (and yellow) color scheme. I put a corner radius
-on a lot of things becuase it looks friendlier that way. I'm not a fan of the
-'Add Song' button.
+I used icons from Parakeet Primaries (and made the one for play next myself). I
+used Tailwind's blue (and yellow) color scheme. I put a corner radius on a lot
+of things becuase it looks friendlier that way. I'm not a fan of the 'Add Song'
+button.
 
 Fun fact: it's responsive!
+
+Sad fact: I might have found a rendering bug in Safari?
 
 ### Sync Options
 
