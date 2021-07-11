@@ -131,8 +131,8 @@ Fun fact: it's responsive!
 
 ### Sync Options
 
-This part is currently in a separate branch (`sync-options`) because I didn't
-have time to properly test it. I'm 85% sure it works.
+As mentioned in the UI, I didn't have time to properly test it. It mostly works
+but there are still some issues.
 
 There are three sync options:
 
@@ -142,6 +142,8 @@ There are three sync options:
    auto-advance if I haven't finished listening to it.
 3. None: completely disconnected from the server. This options doubles as a
    fallback for when the socket disconnects.
+
+(The issues (mostly) happen when you transition from one state to the other)
 
 ### Delay
 

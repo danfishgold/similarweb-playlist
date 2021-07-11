@@ -10,7 +10,7 @@ export default function SyncControls() {
 
   return (
     <div className='sync-controls'>
-      <h2>Sync Status</h2>
+      <h2>Sync Status (not fully tested)</h2>
       {serverSync.type === 'none' && serverSync.becauseDisconnected && (
         <p className='sync-controls__disconnection-warning'>
           Oh no! You've lost connection to the server so you're not getting or
